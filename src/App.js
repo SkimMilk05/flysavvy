@@ -25,6 +25,8 @@ class App extends Component {
                isLoaded: true, //data has been loaded
                items: json, //save data inside the app state
             })
+         })
+         .catch(err => { console.log(err) 
          });
 
    }
@@ -40,11 +42,42 @@ class App extends Component {
       else {
          return (
             <div className="App">
-              Flight Data loaded
+            {/* loop through data to display */ }
+               <ul> {/* use javascript map function. It loops through each item */}
+                  {items.Quotes.map(quote => (
+                        <li key={quote.QuoteId}>
+                           Price: {quote.MinPrice} | 
+                           Date/Time: {quote.QuoteDateTime}
+                        </li>
+                  ))}
+               </ul>
             </div>
          );
       }
    }
 }
+
+/*
+{4 items
+"Quotes":[
+0:{5 items
+"QuoteId":1
+"MinPrice":120
+"Direct":true
+"OutboundLeg":{...}4 items
+"QuoteDateTime":"2021-03-01T14:05:00"
+}
+]
+"Carriers":[1 item
+0:{...}2 items
+]
+"Places":[2 items
+0:{...}8 items
+1:{...}8 items
+]
+"Currencies":[1 item
+0:{...}8 items
+]
+*/
 
 export default App;
