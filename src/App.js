@@ -10,12 +10,92 @@ class App extends Component {
       }
    }
 
+   /*
+   search() {
+
+      fetch("https://partners.api.skyscanner.net/apiservices/pricing/v1.0", {
+         "method": "POST",
+         "headers": {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-Forwarded-For": "100.15.73.229",
+            "accept": "application/json"
+         },
+         "body": JSON.stringify({
+            country: "US",
+            currency: "USD",
+            locale: "en-US",
+            originplace: "IAD-sky",
+            destinationplace: "LAX-sky",
+            outboundPartialDate: "2021-03-03",
+            apikey: "100.15.73.229"
+         })
+         })
+         .then(response => response.json())
+         .then(json => { //then, with the jason format,
+            this.setState({
+               startedSession: true //session has been started
+            })
+         })
+         .catch(err => {
+         console.log(err);
+         });
+   }
+*/
    componentDidMount() { //runs after render() method, then updates render method that outputs results
+
+   
+   //search 
+   //leave space b/c that works?
+   fetch("https://cors-anywhere.herokuapp.com/ https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/pricing/v1.0", {
+         method: "POST",
+         mode: "cors",
+         headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-Forwarded-For": "71.163.15.28",
+            "accept": "application/json"
+         },
+         body: JSON.stringify({
+            country: "US",
+            currency: "USD",
+            locale: "en-US",
+            originplace: "IAD-sky",
+            destinationplace: "LAX-sky",
+            outboundPartialDate: "2021-03-03",
+            apikey: "e3baccc270msh832c83181dc8df3p1caccbjsn78ad599506d4"
+         })
+         })
+         .then(response => {
+            console.log(response)
+          })
+         .catch(err => {
+         console.log(err);
+         });
+   
+/*
+   var unirest = require('unirest');
+   unirest.post("https://cors-anywhere.herokuapp.com/ https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/pricing/v1.0")
+      .header("X-RapidAPI-Key", "73c4c7b9e4msh0a2357717fa16ddp1db3bdjsn8cef95e5049c")
+      .header("X-RapidAPI-Host", "skyscanner-skyscanner-flight-search-v1.p.rapidapi.com")
+      .header("Content-Type", "application/x-www-form-urlencoded")
+      .send("inboundDate=2021-03-10")
+      .send("cabinClass=business")
+      .send("children=0")
+      .send("infants=0")
+      .send("country=US")
+      .send("currency=USD")
+      .send("locale=en-US")
+      .send("originPlace=SFO-sky")
+      .send("destinationPlace=LHR-sky")
+      .send("adults=1")
+   .end(function (result) {
+   console.log(result.status, result.headers, result.body);
+   });
+*/
       
-    fetch("https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browsequotes/v1.0/US/USD/en-US/EWR-sky/LAX-sky/2021-03-02", {
-      "method": "GET",
-      "headers": {
-        "x-rapidapi-key": "e3baccc270msh832c83181dc8df3p1caccbjsn78ad599506d4",
+   fetch("https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browsequotes/v1.0/US/USD/en-US/EWR-sky/LAX-sky/2021-03-02", {
+      method: "GET",
+      headers: {
+        "x-rapidapi-key": "73c4c7b9e4msh0a2357717fa16ddp1db3bdjsn8cef95e5049c",
         "x-rapidapi-host": "skyscanner-skyscanner-flight-search-v1.p.rapidapi.com"
       }
     })
@@ -23,7 +103,7 @@ class App extends Component {
          .then(json => { //then, with the jason format,
             this.setState({
                isLoaded: true, //data has been loaded
-               items: json, //save data inside the app state
+               items: json
             })
          })
          .catch(err => { console.log(err) 
@@ -33,7 +113,8 @@ class App extends Component {
 
    render() { //runs before componentDidMount() method
 
-      var { isLoaded, items} = this.state; //access properties inside state
+      var { isLoaded, startedSession, items} = this.state; //access properties inside state
+
 
       if (!isLoaded) {
          return <div>Loading...</div>;
