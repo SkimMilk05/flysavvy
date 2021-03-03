@@ -1,0 +1,15 @@
+/* CSS for nav bar */
+
+/* for logo */
+img {
+    height: 35px;
+    width: auto;
+}
+
+.logo-text {
+    font-style: italic;
+}
+
+.phrase {
+    font-size: x-small;
+}
