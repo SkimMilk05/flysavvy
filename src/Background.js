@@ -1,13 +1,20 @@
 import React, { Component } from 'react';
 import './background.css';
 import Slideshow from './Slideshow'
+import FlightCard from './FlightCard'
+import Filter from './Filter'
+import SearchCard from './SearchCard'
+import LoadImage from './LoadImage'
 
 class Background extends Component {
     render() {
         return (
             <div className="Background">
-                <h1>Hello World</h1>
-                <Slideshow/>
+                {/*<FlightCard/>*/}
+                {/*<Slideshow/>*/}
+                {/*<Filter/>*/}
+                <SearchCard/>
+                {/*<LoadImage/>*/}
             </div>
         );
     }
