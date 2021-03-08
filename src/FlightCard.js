@@ -12,7 +12,7 @@ class FlightCard extends Component {
             departTime: '',
             arriveTime: '',
             leavingFrom: '',
-            arrivingTo: '',
+            goingTo: '',
             price: 0.00,
 
 
