@@ -15,7 +15,7 @@ class SearchCard extends Component {
             <div className="mid-search-card">
                 <div className="card w-75">
                     <div className="card-body">
-                    <SearchSession/>
+                        <SearchSession/>
                     </div>
                 </div>
             </div>
