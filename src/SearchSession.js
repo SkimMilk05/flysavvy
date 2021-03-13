@@ -5,9 +5,18 @@ import DatePicker from "react-datepicker"; //date picker
 import "react-datepicker/dist/react-datepicker.css";
 import Select from 'react-select'; //select and search
 
-function dateToString(date) {
+/*
+ *Application Logic
+ * 1. User types in place
+ *     after you get past two characters, send api request to find places list.
+ *     user chooses a place. The value that is set to this.state.origin/destination is the ID that skyscanner uses. 
+ * 2. After you return places list, send request to browse dates/quotes to get flight information
+ * 3. After you obtain flight information, pass on the data to flightCard components and load. 
+ *     
+ */
+function dateToString(date) { //date must be in YYYY-MM-DD format
     var year = date.getFullYear();
-    var month = date.getMonth() + 1;
+    var month = date.getMonth() + 1; //getMonth returns 0-11, 0 for Jan
     var day = date.getDate();
 
     const single_digits = [1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -28,17 +37,16 @@ class SearchSession extends Component {
         super(props);
         this.state = { //fields
             submitted: false,
+            country: 'US',
             origin: '',
             destination: '',
             outbound: new Date(),
             inbound: new Date(),
-            currency: '',
+            currency: 'USD',
 
             //get from parent, search session.
             places_list: [
-                {label: 'LAX', value: 'LAX-sky'},
-                {label: 'IAD', value: 'IAD-sky'},
-                {label: 'HNL', value: 'HNL-sky'}
+                {label: 'Anywhere', value: 'anywhere'},
             ],
 
             //get from parent, search session
@@ -48,15 +56,37 @@ class SearchSession extends Component {
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.apiCall = this.apiCall.bind(this);
+        this.getFlightInfo = this.getFlightInfo.bind(this);
+        this.getPlaces = this.getPlaces.bind(this);
 
     }
 
+    getPlaces(event) {
 
+        var country = this.state.country;
+        var currency = this.state.currency;
+        var place = event.value;
 
-    apiCall() {
+        fetch(`https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/autosuggest/v1.0/${country}/${currency}/en-US/?query=${place}`, {
+        "method": "GET",
+        "headers": {
+            "x-rapidapi-key": "73c4c7b9e4msh0a2357717fa16ddp1db3bdjsn8cef95e5049c",
+            "x-rapidapi-host": "skyscanner-skyscanner-flight-search-v1.p.rapidapi.com"
+        }
+        })
+        .then(response => {
+            console.log(response);
+        })
+        .catch(err => {
+            console.error(err);
+        });
 
-        var country = "US";
+        console.log(place);
+    }
+
+    getFlightInfo() {
+
+        var country = this.state.country;
         var currency = this.state.currency;
         var origin = this.state.origin;
         var destination = this.state.destination;
@@ -100,9 +130,8 @@ class SearchSession extends Component {
     }
 
     handleSubmit(event) {
-        alert('You sumbitted a form!');
         event.preventDefault();
-        this.apiCall();
+        this.getFlightInfo();
     }
 
     
@@ -114,10 +143,10 @@ class SearchSession extends Component {
         return ( 
             <form onSubmit={this.handleSubmit}>
                 {/* Leaving From */}
-                <Select options={places} placeholder="Leaving From" onChange={(e) => this.handleChange("origin-selecter", e)}/>
+                <Select options={places} placeholder="Leaving From" onInputChange={this.getPlaces} onChange={(e) => this.handleChange("origin-selecter", e)}/>
                         
                 {/* Going To */}
-                <Select options={places} placeholder="Going To" onChange={(e) => this.handleChange("destination-selecter", e)}/>
+                <Select options={places} placeholder="Going To" onInputChange={this.getPlaces} onChange={(e) => this.handleChange("destination-selecter", e)}/>
 
                 {/*Outbound Date*/}
                 <DatePicker selected={this.state.outbound} onChange={(e) => this.handleChange("outbound-selecter", e)} label="outbound" dateFormat="MM/dd/yyyy" minDate={new Date()}/>
