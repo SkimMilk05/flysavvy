@@ -65,7 +65,7 @@ class SearchSession extends Component {
 
         var country = this.state.country;
         var currency = this.state.currency;
-        var place = event.value;
+        var place = event;
 
         fetch(`https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/autosuggest/v1.0/${country}/${currency}/en-US/?query=${place}`, {
         "method": "GET",
@@ -76,12 +76,22 @@ class SearchSession extends Component {
         })
         .then(response => {
             console.log(response);
+            return response.json();
         })
-        .catch(err => {
-            console.error(err);
-        });
+        .then(json => {
+            console.log(json);
+            var places = []
+            var i;
+            for (i=0; i < json.Places.length; i++) {
+                places.push({label: json.Places[i].PlaceName, value: json.Places[i].PlaceId })
+            }
+            this.setState({
+                places_list: places
+            })
+            this.setState({origin: event.value});
+        })
 
-        console.log(place);
+
     }
 
     getFlightInfo() {
