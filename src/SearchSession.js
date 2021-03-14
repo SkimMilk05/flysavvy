@@ -8,9 +8,12 @@ import AsyncSelect from 'react-select/async';
 
 /*
  *Application Logic
+ * 0. When component mounts
+ *      load countries - GET list markets
+ *      load currencies - GET currencies
  * 1. User types in place
- *     after you get past two characters, send api request to find places list.
- *     user chooses a place. The value that is set to this.state.origin/destination is the ID that skyscanner uses. 
+ *     when they type in input, send api request to find places list.
+ *     user chooses a place. destination is the ID that skyscanner uses. 
  * 2. After you return places list, send request to browse dates/quotes to get flight information
  * 3. After you obtain flight information, pass on the data to flightCard components and load. 
  *     
@@ -41,44 +44,54 @@ class SearchSession extends Component {
         super(props);
         this.state = { //fields
             submitted: false,
-            country: 'US',
+            country: '',
             origin: '',
             destination: '',
             outbound: new Date(),
             inbound: new Date(),
-            currency: 'USD',
+            currency: '',
+            locale: 'en-US',
 
-            //get from parent, search session.
-            origin_places_list: [
-                {label: 'Anywhere', value: 'anywhere'},
-            ],
-
-            dest_places_list: [
-                {label: 'Anywhere', value: 'anywhere'},
-            ],
-
-            
-            currency_list : [],
-
-            inputValue: ""
         };
+
+        
 
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.getFlightInfo = this.getFlightInfo.bind(this);
-        this.getPlaces = this.getPlaces.bind(this);
         this.getCurrencies = this.getCurrencies.bind(this);
+        this.getCountries = this.getCountries.bind(this);
 
-
-        this.loadOptions = this.loadOptions.bind(this);
-
-
+        this.loadPlaces = this.loadPlaces.bind(this);
+        
     }
 
     componentDidMount() {
+        this.getCountries();
         this.getCurrencies();
       }
+
+    getCountries() {
+        fetch("https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/reference/v1.0/countries/en-US", {
+            "method": "GET",
+            "headers": {
+                "x-rapidapi-key": "73c4c7b9e4msh0a2357717fa16ddp1db3bdjsn8cef95e5049c",
+                "x-rapidapi-host": "skyscanner-skyscanner-flight-search-v1.p.rapidapi.com"
+            }
+        })
+        .then(response => {
+            console.log(response);
+            return response.json();
+        })
+        .then(json => {
+            console.log(json);
+            const countries = json.Countries.map(function (cnt) {
+                return { value: cnt.Code, label: cnt.Name };
+            });
+            this.setState({country_list: countries});
+        })
+    }
 
     getCurrencies() {
         fetch("https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/reference/v1.0/currencies", {
@@ -94,21 +107,20 @@ class SearchSession extends Component {
         })
         .then(json => {
             console.log(json);
-            var currencies = []
-            var i;
-            for (i=0; i < json.Currencies.length; i++) {
-                currencies.push({label: json.Currencies[i].Code, value: json.Currencies[i].Code })
-            }
-            console.log(currencies)
+            var currencies = json.Currencies.map(function (curr) {
+                return { value: curr.Code, label: curr.Code };
+            });
             this.setState({currency_list: currencies});
         })
     }
 
 
-    async loadOptions(inputValue) {
-        console.log('loading');
-        console.log(inputValue);
-        const response = await fetch(`https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/autosuggest/v1.0/US/USD/en-US/?query=${inputValue}`, {
+    async loadPlaces(inputValue) {
+        var country = this.state.country;
+        var locale = this.state.locale;
+        var currency = this.state.currency;
+
+        const response = await fetch(`https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/autosuggest/v1.0/${country}/${currency}/${locale}/?query=${inputValue}`, {
             "method": "GET",
             "headers": {
                 "x-rapidapi-key": "73c4c7b9e4msh0a2357717fa16ddp1db3bdjsn8cef95e5049c",
@@ -122,41 +134,7 @@ class SearchSession extends Component {
         });
     }
 
-    getPlaces(selector, event) {
 
-        console.log(event.type);
-        var country = this.state.country;
-        var currency = this.state.currency;
-        var place = event;
-
-        fetch(`https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/autosuggest/v1.0/${country}/${currency}/en-US/?query=${place}`, {
-        "method": "GET",
-        "headers": {
-            "x-rapidapi-key": "73c4c7b9e4msh0a2357717fa16ddp1db3bdjsn8cef95e5049c",
-            "x-rapidapi-host": "skyscanner-skyscanner-flight-search-v1.p.rapidapi.com"
-        }
-        })
-        .then(response => {
-            return response.json();
-        })
-        .then(json => {
-            console.log(json);
-            var places = []
-            var i;
-            for (i=0; i < json.Places.length; i++) {
-                places.push({label: json.Places[i].PlaceName, value: json.Places[i].PlaceId })
-            }
-            this.setState({origin_places_list: places});
-            if (selector === "origin-selector") {
-                this.setState({origin_places_list: places});
-            } else {
-                this.setState({dest_places_list: places});
-            }
-        })
-        
-
-
-    }
 
     getFlightInfo() {
 
@@ -186,6 +164,9 @@ class SearchSession extends Component {
 
     //handle any changes to the form
     handleChange(selecter, event) {
+        if (selecter === "country-selecter") {
+            this.setState({country: event.value});
+        }
         if (selecter === "origin-selecter") {
             this.setState({origin: event.value});
         }
@@ -213,21 +194,20 @@ class SearchSession extends Component {
 
     render() {
 
-        const origin_places_list = this.state.origin_places_list;
-        const dest_places_list = this.state.dest_places_list;
         const currencies = this.state.currency_list;
+        const countries = this.state.country_list;
         return ( 
             <form onSubmit={this.handleSubmit}>
+
+                {/* Country */}
+                <Select options={countries} placeholder="Country" onChange={(e) => this.handleChange("country-selecter", e)}/>
+
                 {/* Leaving From */}
-                <AsyncSelect placeholder="Going To" noOptionsMessage={() => "Search for a place"} cacheOptions defaultOptions loadOptions={this.loadOptions} onChange={(e) => this.handleChange("origin-selecter", e)} />
+                <AsyncSelect placeholder="Going To " noOptionsMessage={() => "Search for a place"} cacheOptions loadOptions={this.loadPlaces} onChange={(e) => this.handleChange("origin-selecter", e)} />
                 
 
                 {/* Going To */}
-                {/*<Select id="destination" options={dest_places_list} placeholder="Going To" 
-                    onInputChange={(e,action) => {
-                        action.action === "input-change" ? this.getPlaces("destination-selecter", e) : console.log(action)
-                    }} 
-                onChange={(e) => this.handleChange("destination-selecter", e)}/>*/}
+                <AsyncSelect placeholder="Leaving From" noOptionsMessage={() => "Search for a place"} cacheOptions loadOptions={this.loadPlaces} onChange={(e) => this.handleChange("destination-selecter", e)} />
 
                 {/*Outbound Date*/}
                 <DatePicker selected={this.state.outbound} onChange={(e) => this.handleChange("outbound-selecter", e)} label="outbound" dateFormat="MM/dd/yyyy" minDate={new Date()}/>
