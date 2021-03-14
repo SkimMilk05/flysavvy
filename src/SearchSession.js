@@ -5,6 +5,9 @@ import DatePicker from "react-datepicker"; //date picker
 import "react-datepicker/dist/react-datepicker.css";
 import Select from 'react-select'; //select and search
 import AsyncSelect from 'react-select/async';
+import Toggle from 'react-toggle'; //for toggle for round trip
+import "react-toggle/style.css"; 
+
 
 /*
  *Application Logic
@@ -44,6 +47,8 @@ class SearchSession extends Component {
         super(props);
         this.state = { //fields
             submitted: false,
+            round_trip: true,
+
             country: 'US', //set default to US. Other countries work with US query 
             origin: '',
             destination: '',
@@ -148,14 +153,21 @@ class SearchSession extends Component {
 
     getFlightInfo() {
 
+        var round_trip = this.state.round_trip;
         var country = this.state.country;
         var currency = this.state.currency;
         var origin = this.state.origin;
         var destination = this.state.destination;
 
         var outbound = dateToString(this.state.outbound); 
-
-        var url = `https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browsequotes/v1.0/${country}/${currency}/en-US/${origin}/${destination}/${outbound}/`;
+        var inbound = dateToString(this.state.inbound);
+        
+        if (round_trip) {
+            var url = `https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browsequotes/v1.0/${country}/${currency}/en-US/${origin}/${destination}/${outbound}?inboundpartialdate=${inbound}`;
+        } else {
+            var url = `https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browsequotes/v1.0/${country}/${currency}/en-US/${origin}/${destination}/${outbound}`;
+        }
+        
 
         fetch(url, {
         method: "GET",
@@ -174,6 +186,9 @@ class SearchSession extends Component {
 
     //handle any changes to the form
     handleChange(selecter, event) {
+        if (selecter === "round-trip-selecter") {
+            this.setState({round_trip: event.target.checked});
+        }
         if (selecter === "origin-selecter") {
             this.setState({origin: event.value});
         }
@@ -182,6 +197,7 @@ class SearchSession extends Component {
         }
         if (selecter === "outbound-selecter") {
             this.setState({outbound: event});
+            this.setState({inbound: event});
         }
         if (selecter === "inbound-selecter") {
             this.setState({inbound: event});
@@ -201,29 +217,33 @@ class SearchSession extends Component {
     
 
     render() {
+            var round_trip = this.state.round_trip;
             var loaded = this.state.currencies_loaded && this.state.countries_loaded;
             const currencies = this.state.currency_list;
             const countries = this.state.country_list;
             
             if (loaded) {
-                console.log(
-                    countries.find(item => {
-                        return item.value == 'US'
-                    })
-                )
 
                 return ( 
                     <form onSubmit={this.handleSubmit}>
+
+                        <label>
+                        <Toggle
+                            defaultChecked={round_trip}
+                            icons={false}
+                            onChange={(e) => this.handleChange("round-trip-selecter", e)} />
+                        <span>Round trip</span>
+                        </label>
     
                         {/* Leaving From */}
                         <AsyncSelect placeholder="Going To " noOptionsMessage={() => "Search for a place"} cacheOptions loadOptions={this.loadPlaces} onChange={(e) => this.handleChange("origin-selecter", e)} />
                         
-    
                         {/* Going To */}
                         <AsyncSelect placeholder="Leaving From" noOptionsMessage={() => "Search for a place"} cacheOptions loadOptions={this.loadPlaces} onChange={(e) => this.handleChange("destination-selecter", e)} />
     
                         {/*Outbound Date*/}
-                        <DatePicker selected={this.state.outbound} onChange={(e) => this.handleChange("outbound-selecter", e)} label="outbound" dateFormat="MM/dd/yyyy" minDate={new Date()}/>
+                        {round_trip && <DatePicker selected={this.state.outbound} onChange={(e) => this.handleChange("outbound-selecter", e)} label="outbound" dateFormat="MM/dd/yyyy" minDate={new Date()}/>}
+                        
     
                         {/* Inbound Date*/}
                         <DatePicker selected={this.state.inbound} onChange={(e) => this.handleChange("inbound-selecter", e)} label="inbound" dateFormat="MM/dd/yyyy" minDate={this.state.outbound} />
@@ -233,7 +253,7 @@ class SearchSession extends Component {
                             options={currencies} placeholder="Currency" onChange={(e) => this.handleChange("currency-selecter", e)}/>
     
                         {/*Submit button */}
-                            <input type="submit" value="Submit" />
+                        <input type="submit" value="Submit" />
                     </form>
                 );
             } else {
