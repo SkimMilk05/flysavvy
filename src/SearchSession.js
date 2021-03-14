@@ -105,33 +105,21 @@ class SearchSession extends Component {
     }
 
 
-    loadOptions(inputValue) {
+    async loadOptions(inputValue) {
         console.log('loading');
         console.log(inputValue);
-        return fetch(`https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/autosuggest/v1.0/US/USD/en-US/?query=${inputValue}`, {
+        const response = await fetch(`https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/autosuggest/v1.0/US/USD/en-US/?query=${inputValue}`, {
             "method": "GET",
             "headers": {
                 "x-rapidapi-key": "73c4c7b9e4msh0a2357717fa16ddp1db3bdjsn8cef95e5049c",
                 "x-rapidapi-host": "skyscanner-skyscanner-flight-search-v1.p.rapidapi.com"
             }
-        })
-        .then( response => {
-            console.log(response);
-            return response.json();
-        })
-        .then(json => json.Places.map(function (place) {
-            return {value: place.PlaceId, label: place.PlaceName};
-        }));
-        /*.then((json) => {
-            const formatted = json.Place.map((place) => {
-                return Object.assign({}, {
-                    value: place.PlaceId,
-                    label: place.PlaceName
-                });
-            })
-            return { options: formatted }
-        })*/
-
+        });
+        console.log(response);
+        const json = await response.json();
+        return json.Places.map(function (place) {
+            return { value: place.PlaceId, label: place.PlaceName };
+        });
     }
 
     getPlaces(selector, event) {
@@ -231,7 +219,7 @@ class SearchSession extends Component {
         return ( 
             <form onSubmit={this.handleSubmit}>
                 {/* Leaving From */}
-                <AsyncSelect placeholder="Going To" cacheOptions defaultOptions loadOptions={this.loadOptions} onChange={(e) => this.handleChange("origin-selecter", e)} />
+                <AsyncSelect placeholder="Going To" noOptionsMessage={() => "Search for a place"} cacheOptions defaultOptions loadOptions={this.loadOptions} onChange={(e) => this.handleChange("origin-selecter", e)} />
                 
 
                 {/* Going To */}
