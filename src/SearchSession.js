@@ -45,7 +45,11 @@ class SearchSession extends Component {
             currency: 'USD',
 
             //get from parent, search session.
-            places_list: [
+            origin_places_list: [
+                {label: 'Anywhere', value: 'anywhere'},
+            ],
+
+            dest_places_list: [
                 {label: 'Anywhere', value: 'anywhere'},
             ],
 
@@ -61,8 +65,9 @@ class SearchSession extends Component {
 
     }
 
-    getPlaces(event) {
+    getPlaces(selector, event) {
 
+        console.log(event.type);
         var country = this.state.country;
         var currency = this.state.currency;
         var place = event;
@@ -75,7 +80,6 @@ class SearchSession extends Component {
         }
         })
         .then(response => {
-            console.log(response);
             return response.json();
         })
         .then(json => {
@@ -85,11 +89,14 @@ class SearchSession extends Component {
             for (i=0; i < json.Places.length; i++) {
                 places.push({label: json.Places[i].PlaceName, value: json.Places[i].PlaceId })
             }
-            this.setState({
-                places_list: places
-            })
-            this.setState({origin: event.value});
+            this.setState({origin_places_list: places});
+            if (selector === "origin-selector") {
+                this.setState({origin_places_list: places});
+            } else {
+                this.setState({dest_places_list: places});
+            }
         })
+        
 
 
     }
@@ -116,25 +123,25 @@ class SearchSession extends Component {
             console.log(result);
         })
         .catch(err => {
-            console.error(err);
+            console.log(err);
         });            
     }
 
     //handle any changes to the form
     handleChange(selecter, event) {
-        if (selecter == "origin-selecter") {
+        if (selecter === "origin-selecter") {
             this.setState({origin: event.value});
         }
-        if (selecter == "destination-selecter") {
+        if (selecter === "destination-selecter") {
             this.setState({destination: event.value});
         }
-        if (selecter == "outbound-selecter") {
+        if (selecter === "outbound-selecter") {
             this.setState({outbound: event});
         }
-        if (selecter == "inbound-selecter") {
+        if (selecter === "inbound-selecter") {
             this.setState({inbound: event});
         }
-        if (selecter == "currency-selecter") {
+        if (selecter === "currency-selecter") {
             this.setState({currency: event.value});
         }
     }
@@ -148,15 +155,24 @@ class SearchSession extends Component {
 
     render() {
 
-        const places = this.state.places_list;
+        const origin_places_list = this.state.origin_places_list;
+        const dest_places_list = this.state.dest_places_list;
         const currencies = this.state.currency_list;
         return ( 
             <form onSubmit={this.handleSubmit}>
                 {/* Leaving From */}
-                <Select options={places} placeholder="Leaving From" onInputChange={this.getPlaces} onChange={(e) => this.handleChange("origin-selecter", e)}/>
+                <Select id="origin" options={origin_places_list} placeholder="Leaving From" 
+                    onInputChange={(e,action) => {
+                        action.action === "input-change" ? this.getPlaces("origin-selecter", e) : console.log(action)
+                    }} 
+                    onChange={(e) => this.handleChange("origin-selecter", e)} />
                         
                 {/* Going To */}
-                <Select options={places} placeholder="Going To" onInputChange={this.getPlaces} onChange={(e) => this.handleChange("destination-selecter", e)}/>
+                <Select id="destination" options={dest_places_list} placeholder="Going To" 
+                    onInputChange={(e,action) => {
+                        action.action === "input-change" ? this.getPlaces("destination-selecter", e) : console.log(action)
+                    }} 
+                    onChange={(e) => this.handleChange("destination-selecter", e)}/>
 
                 {/*Outbound Date*/}
                 <DatePicker selected={this.state.outbound} onChange={(e) => this.handleChange("outbound-selecter", e)} label="outbound" dateFormat="MM/dd/yyyy" minDate={new Date()}/>
