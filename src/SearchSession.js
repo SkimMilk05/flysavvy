@@ -44,13 +44,17 @@ class SearchSession extends Component {
         super(props);
         this.state = { //fields
             submitted: false,
-            country: '',
+            country: 'US', //set default to US. Other countries work with US query 
             origin: '',
             destination: '',
             outbound: new Date(),
             inbound: new Date(),
-            currency: '',
+            currency: 'USD',
             locale: 'en-US',
+
+            countries_loaded: false,
+            currencies_loaded: false,
+            
 
         };
 
@@ -89,7 +93,10 @@ class SearchSession extends Component {
             const countries = json.Countries.map(function (cnt) {
                 return { value: cnt.Code, label: cnt.Name };
             });
-            this.setState({country_list: countries});
+            this.setState({
+                country_list: countries,
+                countries_loaded: true
+            });
         })
     }
 
@@ -110,7 +117,10 @@ class SearchSession extends Component {
             var currencies = json.Currencies.map(function (curr) {
                 return { value: curr.Code, label: curr.Code };
             });
-            this.setState({currency_list: currencies});
+            this.setState({
+                currency_list: currencies,
+                currencies_loaded: true
+            });
         })
     }
 
@@ -164,9 +174,6 @@ class SearchSession extends Component {
 
     //handle any changes to the form
     handleChange(selecter, event) {
-        if (selecter === "country-selecter") {
-            this.setState({country: event.value});
-        }
         if (selecter === "origin-selecter") {
             this.setState({origin: event.value});
         }
@@ -186,6 +193,7 @@ class SearchSession extends Component {
 
     handleSubmit(event) {
         event.preventDefault();
+        this.setState({submitted: true});
         this.getFlightInfo();
     }
     
@@ -193,35 +201,45 @@ class SearchSession extends Component {
     
 
     render() {
+            var loaded = this.state.currencies_loaded && this.state.countries_loaded;
+            const currencies = this.state.currency_list;
+            const countries = this.state.country_list;
+            
+            if (loaded) {
+                console.log(
+                    countries.find(item => {
+                        return item.value == 'US'
+                    })
+                )
 
-        const currencies = this.state.currency_list;
-        const countries = this.state.country_list;
-        return ( 
-            <form onSubmit={this.handleSubmit}>
-
-                {/* Country */}
-                <Select options={countries} placeholder="Country" onChange={(e) => this.handleChange("country-selecter", e)}/>
-
-                {/* Leaving From */}
-                <AsyncSelect placeholder="Going To " noOptionsMessage={() => "Search for a place"} cacheOptions loadOptions={this.loadPlaces} onChange={(e) => this.handleChange("origin-selecter", e)} />
-                
-
-                {/* Going To */}
-                <AsyncSelect placeholder="Leaving From" noOptionsMessage={() => "Search for a place"} cacheOptions loadOptions={this.loadPlaces} onChange={(e) => this.handleChange("destination-selecter", e)} />
-
-                {/*Outbound Date*/}
-                <DatePicker selected={this.state.outbound} onChange={(e) => this.handleChange("outbound-selecter", e)} label="outbound" dateFormat="MM/dd/yyyy" minDate={new Date()}/>
-
-                {/* Inbound Date*/}
-                <DatePicker selected={this.state.inbound} onChange={(e) => this.handleChange("inbound-selecter", e)} label="inbound" dateFormat="MM/dd/yyyy" minDate={this.state.outbound} />
-
-                {/* currency */}
-                <Select options={currencies} placeholder="Currency" onChange={(e) => this.handleChange("currency-selecter", e)}/>
-
-                {/*Submit button */}
-                    <input type="submit" value="Submit" />
-            </form>
-        );
+                return ( 
+                    <form onSubmit={this.handleSubmit}>
+    
+                        {/* Leaving From */}
+                        <AsyncSelect placeholder="Going To " noOptionsMessage={() => "Search for a place"} cacheOptions loadOptions={this.loadPlaces} onChange={(e) => this.handleChange("origin-selecter", e)} />
+                        
+    
+                        {/* Going To */}
+                        <AsyncSelect placeholder="Leaving From" noOptionsMessage={() => "Search for a place"} cacheOptions loadOptions={this.loadPlaces} onChange={(e) => this.handleChange("destination-selecter", e)} />
+    
+                        {/*Outbound Date*/}
+                        <DatePicker selected={this.state.outbound} onChange={(e) => this.handleChange("outbound-selecter", e)} label="outbound" dateFormat="MM/dd/yyyy" minDate={new Date()}/>
+    
+                        {/* Inbound Date*/}
+                        <DatePicker selected={this.state.inbound} onChange={(e) => this.handleChange("inbound-selecter", e)} label="inbound" dateFormat="MM/dd/yyyy" minDate={this.state.outbound} />
+    
+                        {/* currency */}
+                        <Select defaultValue={currencies.find(item => {return item.value == 'USD'})}
+                            options={currencies} placeholder="Currency" onChange={(e) => this.handleChange("currency-selecter", e)}/>
+    
+                        {/*Submit button */}
+                            <input type="submit" value="Submit" />
+                    </form>
+                );
+            } else {
+                return null;
+            }
+            
         
     }
 }
