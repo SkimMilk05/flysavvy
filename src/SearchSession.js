@@ -4,6 +4,7 @@ import './searchSession.css';
 import DatePicker from "react-datepicker"; //date picker
 import "react-datepicker/dist/react-datepicker.css";
 import Select from 'react-select'; //select and search
+import AsyncSelect from 'react-select/async';
 
 /*
  *Application Logic
@@ -33,6 +34,7 @@ function dateToString(date) { //date must be in YYYY-MM-DD format
 
 
 
+
 class SearchSession extends Component {
 
     constructor(props) {
@@ -56,7 +58,9 @@ class SearchSession extends Component {
             ],
 
             
-            currency_list : []
+            currency_list : [],
+
+            inputValue: ""
         };
 
 
@@ -66,6 +70,8 @@ class SearchSession extends Component {
         this.getPlaces = this.getPlaces.bind(this);
         this.getCurrencies = this.getCurrencies.bind(this);
 
+
+        this.loadOptions = this.loadOptions.bind(this);
 
 
     }
@@ -99,6 +105,34 @@ class SearchSession extends Component {
     }
 
 
+    loadOptions(inputValue) {
+        console.log('loading');
+        console.log(inputValue);
+        return fetch(`https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/autosuggest/v1.0/US/USD/en-US/?query=${inputValue}`, {
+            "method": "GET",
+            "headers": {
+                "x-rapidapi-key": "73c4c7b9e4msh0a2357717fa16ddp1db3bdjsn8cef95e5049c",
+                "x-rapidapi-host": "skyscanner-skyscanner-flight-search-v1.p.rapidapi.com"
+            }
+        })
+        .then( response => {
+            console.log(response);
+            return response.json();
+        })
+        .then(json => json.Places.map(function (place) {
+            return {value: place.PlaceId, label: place.PlaceName};
+        }));
+        /*.then((json) => {
+            const formatted = json.Place.map((place) => {
+                return Object.assign({}, {
+                    value: place.PlaceId,
+                    label: place.PlaceName
+                });
+            })
+            return { options: formatted }
+        })*/
+
+    }
 
     getPlaces(selector, event) {
 
@@ -185,6 +219,7 @@ class SearchSession extends Component {
         event.preventDefault();
         this.getFlightInfo();
     }
+    
 
     
 
@@ -196,18 +231,15 @@ class SearchSession extends Component {
         return ( 
             <form onSubmit={this.handleSubmit}>
                 {/* Leaving From */}
-                <Select id="origin" options={origin_places_list} placeholder="Leaving From" 
-                    onInputChange={(e,action) => {
-                        action.action === "input-change" ? this.getPlaces("origin-selecter", e) : console.log(action)
-                    }} 
-                    onChange={(e) => this.handleChange("origin-selecter", e)} />
-                        
+                <AsyncSelect placeholder="Going To" cacheOptions defaultOptions loadOptions={this.loadOptions} onChange={(e) => this.handleChange("origin-selecter", e)} />
+                
+
                 {/* Going To */}
-                <Select id="destination" options={dest_places_list} placeholder="Going To" 
+                {/*<Select id="destination" options={dest_places_list} placeholder="Going To" 
                     onInputChange={(e,action) => {
                         action.action === "input-change" ? this.getPlaces("destination-selecter", e) : console.log(action)
                     }} 
-                    onChange={(e) => this.handleChange("destination-selecter", e)}/>
+                onChange={(e) => this.handleChange("destination-selecter", e)}/>*/}
 
                 {/*Outbound Date*/}
                 <DatePicker selected={this.state.outbound} onChange={(e) => this.handleChange("outbound-selecter", e)} label="outbound" dateFormat="MM/dd/yyyy" minDate={new Date()}/>
