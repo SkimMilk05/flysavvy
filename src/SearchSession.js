@@ -31,6 +31,8 @@ function dateToString(date) { //date must be in YYYY-MM-DD format
     return d;
 }
 
+
+
 class SearchSession extends Component {
 
     constructor(props) {
@@ -53,17 +55,50 @@ class SearchSession extends Component {
                 {label: 'Anywhere', value: 'anywhere'},
             ],
 
-            //get from parent, search session
-            currency_list : [
-                {label: 'USD', value: 'USD'}
-            ]
+            
+            currency_list : []
         };
+
+
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.getFlightInfo = this.getFlightInfo.bind(this);
         this.getPlaces = this.getPlaces.bind(this);
+        this.getCurrencies = this.getCurrencies.bind(this);
+
+
 
     }
+
+    componentDidMount() {
+        this.getCurrencies();
+      }
+
+    getCurrencies() {
+        fetch("https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/reference/v1.0/currencies", {
+                    "method": "GET",
+                    "headers": {
+                        "x-rapidapi-key": "73c4c7b9e4msh0a2357717fa16ddp1db3bdjsn8cef95e5049c",
+                        "x-rapidapi-host": "skyscanner-skyscanner-flight-search-v1.p.rapidapi.com"
+                    }
+        })
+        .then(response => {
+            console.log(response);
+            return response.json();
+        })
+        .then(json => {
+            console.log(json);
+            var currencies = []
+            var i;
+            for (i=0; i < json.Currencies.length; i++) {
+                currencies.push({label: json.Currencies[i].Code, value: json.Currencies[i].Code })
+            }
+            console.log(currencies)
+            this.setState({currency_list: currencies});
+        })
+    }
+
+
 
     getPlaces(selector, event) {
 
