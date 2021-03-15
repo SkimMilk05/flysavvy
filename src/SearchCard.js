@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 
-
 //import form components 
 import DatePicker from "react-datepicker"; //date picker
 import "react-datepicker/dist/react-datepicker.css";
@@ -42,24 +41,28 @@ class SearchCard extends Component {
             countries_loaded: false,
             currencies_loaded: false,
 
-            info: null
+            flight_info: null
 
             
             
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-
+        this.getFlightInfo = this.getFlightInfo.bind(this);
         this.getCurrencies = this.getCurrencies.bind(this);
         this.getCountries = this.getCountries.bind(this);
         this.loadPlaces = this.loadPlaces.bind(this);
+        this.cleanFlightInfo = this.cleanFlightInfo.bind(this);
     }
 
+    //get list of countries and currencies accepted by Skyscanner on mount
     componentDidMount() {
         this.getCountries();
         this.getCurrencies();
     }
 
+/** FORM METHODS */
+    //this method makes API call to get list of acceptable countries
     getCountries() {
         fetch("https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/reference/v1.0/countries/en-US", {
             "method": "GET",
@@ -84,6 +87,7 @@ class SearchCard extends Component {
         })
     }
 
+    //this method makes API call to get list of acceptable currencies
     getCurrencies() {
         fetch("https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/reference/v1.0/currencies", {
                     "method": "GET",
@@ -109,6 +113,7 @@ class SearchCard extends Component {
     }
 
 
+    //this method asynchronously loads list of acceptable places based on user's query input frpm the API call
     async loadPlaces(inputValue) {
         var country = this.state.country;
         var locale = this.state.locale;
@@ -128,8 +133,10 @@ class SearchCard extends Component {
         });
     }
 
-    //handle any changes to the form
-    handleChange(selecter, event) {
+/** HANDLE CHANGE TO FORM AND HANDLE FORM SUBMIT METHODS */
+
+       //handle any changes to the form
+       handleChange(selecter, event) {
         if (selecter === "round-trip-selecter") {
             this.setState({round_trip: !(event.target.checked)});
         }
@@ -154,19 +161,170 @@ class SearchCard extends Component {
     handleSubmit(event) {
         event.preventDefault();
         this.setState({submitted: true});
-        //pass all form parameters to parent, SearchSession
+        this.getFlightInfo();
     }
+
+/** RUNS AFTER SUBMIT METHODS */
+    //this method gets list of quotes from Browse Quotes endpoint onSubmit, then passes the cleaned version of the json data to its parent SearchSession Component
+    getFlightInfo() {
+
+        var round_trip = this.state.round_trip;
+        var country = this.state.country;
+        var currency = this.state.currency;
+        var origin = this.state.origin;
+        var destination = this.state.destination;
+
+        var outbound = dateToString(this.state.outbound); 
+        var inbound = dateToString(this.state.inbound);
+
+        var url;
+        
+        if (round_trip) {
+            url = `https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browsequotes/v1.0/${country}/${currency}/en-US/${origin}/${destination}/${outbound}/${inbound}`;
+        } else {
+            url = `https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browsequotes/v1.0/${country}/${currency}/en-US/${origin}/${destination}/${outbound}`;
+        }
+        
+        fetch(url, {
+        method: "GET",
+        headers: {
+            "x-rapidapi-key": "73c4c7b9e4msh0a2357717fa16ddp1db3bdjsn8cef95e5049c",
+            "x-rapidapi-host": "skyscanner-skyscanner-flight-search-v1.p.rapidapi.com"
+        }
+        })
+        .then(response => {
+            console.log(response);
+            return response.json();
+        })
+        .then(json => {
+            console.log(json);
+            const info = this.cleanFlightInfo(json); //see method below
+            this.props.passFlightData(info);
+        })            
+    }
+
+    //cleans the json info to only necessary information after API GET Browse Quotes. Used within getFlightInfo();
+    cleanFlightInfo(json) {
+            /**Dealing with JSON
+             * Carriers: {CarrierId, Name}
+             * Places: {Name, Type, PlaceId, ...}
+             * Quotes:
+             *  Each quote objecct has
+             *      Direct - bool
+             *      MinPrice - price
+             *      (InboundLeg)/Outbound leg - CarrierIds: array of airlines, DepartDate: timestamp (time is always 12am, and no arrive time), DestinationId, OriginId
+             * 
+             * Process each quote object to be one flight card, where:
+             *    roundTrip = SearchSession.state.round_trip
+             *    bestPrice = true if json[0], false if otherwise
+             *    //if round Trip, the flight card will have two flight trips
+             * 
+             *    Each leg/trip is a flight trip component:
+             *      outbound = true if Outbound leg, false if Inbound leg
+             *      nonStop = true if Direct
+             *      airline = find airline name from CarrierId in Carriers
+             *      departDate = DepartDate
+             *      leavingFrom = find place "Name + Type" from OriginId
+             *      arrivingTo = find place "Name + Type" from DestinationId
+             *      price = MinPrice
+             *      
+             * NOTE: Skyscanner API returns Quotes objects array that is sorted from least to greatest MinPrice!! 
+             */
+
+
+        const round_trip = this.state.round_trip;
+
+        const info = json.Quotes.map(function(quote) {
+            var clean_info;
+
+        //Deal with outbound leg first    
+            //set variables
+            var first_quote = false;
+            if (quote === json.Quotes[0]) {
+                first_quote = true;
+            }
+
+            //find airline name, origin name, and destination name from Ids
+            const airline_name = json.Carriers.find(airline => {
+                if (airline.CarrierId === quote.OutboundLeg.CarrierIds[0]) {
+                    return airline.Name;
+                }
+            });
+
+            const origin_name = json.Places.find(place => {
+                if (place.PlaceId === quote.OutboundLeg.OriginId) {
+                    return `${place.Name} ${place.Type}`;
+                }
+            });
+
+            const destination_name = json.Places.find(place => {
+                if (place.PlaceId === quote.OutboundLeg.DestinationId) {
+                    return `${place.Name} ${place.Type}`;
+                }
+            });
+
+            clean_info = {
+                round_trip: round_trip,
+                best_price: first_quote,
+                price: quote.MinPrice,
+                
+                outbound: {
+                    nonStop: quote.Direct,
+                    airline: airline_name,
+                    departDate: quote.OutboundLeg.DepartureDate,
+                    leavingFrom: origin_name,
+                    arrivingTo: destination_name,
+                }
+            }
+        
+        //If inbound leg exists
+            if (round_trip) {
+                //find airline name, origin name, and destination name from Ids
+                const airline_name = json.Carriers.find(airline => {
+                    if (airline.CarrierId === quote.InboundLeg.CarrierIds[0]) {
+                        return airline.Name;
+                    }
+                });
+
+                const origin_name = json.Places.find(place => {
+                    if (place.PlaceId === quote.InboundLeg.OriginId) {
+                        return `${place.Name} ${place.Type}`;
+                    }
+                });
+
+                const destination_name = json.Places.find(place => {
+                    if (place.PlaceId === quote.InboundLeg.DestinationId) {
+                        return `${place.Name} ${place.Type}`;
+                    }
+                });
+
+                //add inbound attribute to cleaned data
+                clean_info.inbound = {
+                    nonStop: quote.Direct,
+                    airline: airline_name,
+                    departDate: quote.InboundLeg.DepartureDate,
+                    leavingFrom: origin_name,
+                    arrivingTo: destination_name,
+                }
+            }
+            
+            return clean_info;
+        });
+
+        console.log(info);
+        return info;
+    }
+
+ 
     
 
-    
+//
     render() {
             var submitted = this.state.submitted;
 
             var one_way = !(this.state.round_trip);
             var loaded = this.state.currencies_loaded && this.state.countries_loaded;
             const currencies = this.state.currency_list;
-
-            var info = this.state.info;
             
             if (loaded) {
                 return ( 
