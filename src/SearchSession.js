@@ -7,7 +7,7 @@ import Select from 'react-select'; //select and search
 import AsyncSelect from 'react-select/async';
 import Toggle from 'react-toggle'; //for toggle for round trip
 import "react-toggle/style.css"; 
-
+import {dateToString} from './dateToString.js'
 
 /*
  *Application Logic
@@ -21,25 +21,6 @@ import "react-toggle/style.css";
  * 3. After you obtain flight information, pass on the data to flightCard components and load. 
  *     
  */
-function dateToString(date) { //date must be in YYYY-MM-DD format
-    var year = date.getFullYear();
-    var month = date.getMonth() + 1; //getMonth returns 0-11, 0 for Jan
-    var day = date.getDate();
-
-    const single_digits = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-
-    if (single_digits.includes(month)) {
-        month = "0" + month.toString();
-    }
-    if (single_digits.includes(day)) {
-        day = "0" + day.toString();
-    }
-    var d = `${year}-${month}-${day}`;
-    return d;
-}
-
-
-
 
 class SearchSession extends Component {
 
@@ -59,27 +40,23 @@ class SearchSession extends Component {
 
             countries_loaded: false,
             currencies_loaded: false,
+
             
-
+            
         };
-
-        
-
-
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.getFlightInfo = this.getFlightInfo.bind(this);
         this.getCurrencies = this.getCurrencies.bind(this);
         this.getCountries = this.getCountries.bind(this);
-
         this.loadPlaces = this.loadPlaces.bind(this);
-        
+        this.passFlightInfo = this.passFlightInfo.bind(this);
     }
 
     componentDidMount() {
         this.getCountries();
         this.getCurrencies();
-      }
+    }
 
     getCountries() {
         fetch("https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/reference/v1.0/countries/en-US", {
@@ -120,7 +97,7 @@ class SearchSession extends Component {
         .then(json => {
             console.log(json);
             var currencies = json.Currencies.map(function (curr) {
-                return { value: curr.Code, label: curr.Code };
+                return { value: curr.Code, label: `(${curr.Symbol}) ${curr.Code}`};
             });
             this.setState({
                 currency_list: currencies,
@@ -161,14 +138,15 @@ class SearchSession extends Component {
 
         var outbound = dateToString(this.state.outbound); 
         var inbound = dateToString(this.state.inbound);
+
+        var url;
         
         if (round_trip) {
-            var url = `https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browsequotes/v1.0/${country}/${currency}/en-US/${origin}/${destination}/${outbound}?inboundpartialdate=${inbound}`;
+            url = `https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browsequotes/v1.0/${country}/${currency}/en-US/${origin}/${destination}/${outbound}/${inbound}`;
         } else {
-            var url = `https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browsequotes/v1.0/${country}/${currency}/en-US/${origin}/${destination}/${outbound}`;
+            url = `https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browsequotes/v1.0/${country}/${currency}/en-US/${origin}/${destination}/${outbound}`;
         }
         
-
         fetch(url, {
         method: "GET",
         headers: {
@@ -176,18 +154,106 @@ class SearchSession extends Component {
             "x-rapidapi-host": "skyscanner-skyscanner-flight-search-v1.p.rapidapi.com"
         }
         })
-        .then(result => {
-            console.log(result);
+        .then(response => {
+            console.log(response);
+            return response.json();
         })
-        .catch(err => {
-            console.log(err);
-        });            
+        .then(json => {
+            console.log(json);
+            const info = this.passFlightInfo(json);
+            console.log('Cleaned info:' + info);
+            this.setState({
+                info: info
+            });
+            return info;
+        })            
+    }
+
+    /**Dealing with JSON
+     * Carriers: {CarrierId, Name}
+     * Places: {Name, Type, PlaceId, ...}
+     * Quotes:
+     *  Each quote objecct has
+     *      Direct - bool
+     *      MinPrice - price
+     *      (InboundLeg)/Outbound leg - CarrierIds: array of airlines, DepartDate: timestamp (time is always 12am, and no arrive time), DestinationId, OriginId
+     * 
+     * Process each quote object to be one flight card, where:
+     *    roundTrip = SearchSession.state.round_trip
+     *    bestPrice = true if json[0], false if otherwise
+     *    //if round Trip, the flight card will have two flight trips
+     * 
+     *    Each leg/trip is a flight trip component:
+     *      outbound = true if Outbound leg, false if Inbound leg
+     *      nonStop = true if Direct
+     *      airline = find airline name from CarrierId in Carriers
+     *      departDate = DepartDate
+     *      leavingFrom = find place "Name + Type" from OriginId
+     *      arrivingTo = find place "Name + Type" from DestinationId
+     *      price = MinPrice
+     *      
+     * NOTE: Skyscanner API returns Quotes objects array that is sorted from least to greatest MinPrice!! 
+     */
+
+    passFlightInfo(json) {
+
+        const round_trip = this.state.round_trip;
+
+        const info = json.Quotes.map(function(quote) {
+
+            
+            var first_quote = false;
+            if (quote === json.Quotes[0]) {
+                first_quote = true;
+            }
+            console.log('First quote:' + first_quote);
+
+            const airline_name = json.Carriers.find(airline => {
+                if (airline.CarrierId === quote.OutboundLeg.CarrierIds[0]) {
+                    return airline.Name;
+                }
+            });
+            console.log('Airline name:' + airline_name);
+
+            const origin_name = json.Places.find(place => {
+                if (place.PlaceId === quote.OutboundLeg.OriginId) {
+                    return `${place.Name} ${place.Type}`;
+                }
+            });
+            console.log('Origin name: ' + origin_name);
+
+            const destination_name = json.Places.find(place => {
+                if (place.PlaceId === quote.OutboundLeg.DestinationId) {
+                    return `${place.Name} ${place.Type}`;
+                }
+            });
+            console.log('Dest name: ' + destination_name);
+
+            return {
+                round_trip: round_trip,
+                best_price:  first_quote,
+                
+                outbound: {
+                    outbound: true,
+                    nonStop: quote.Direct,
+                    airline: airline_name,
+                    departDate: quote.OutboundLeg.DepartureDate,
+                    leavingFrom: origin_name,
+                    arrivingTo: destination_name,
+                    price: quote.MinPrice,
+                }
+            };
+        });
+
+        console.log(info);
+
+        return info;
     }
 
     //handle any changes to the form
     handleChange(selecter, event) {
         if (selecter === "round-trip-selecter") {
-            this.setState({round_trip: event.target.checked});
+            this.setState({round_trip: !(event.target.checked)});
         }
         if (selecter === "origin-selecter") {
             this.setState({origin: event.value});
@@ -215,46 +281,55 @@ class SearchSession extends Component {
     
 
     
-
     render() {
-            var round_trip = this.state.round_trip;
+            var submitted = this.state.submitted;
+
+            var one_way = !(this.state.round_trip);
             var loaded = this.state.currencies_loaded && this.state.countries_loaded;
             const currencies = this.state.currency_list;
-            const countries = this.state.country_list;
+
+            var info = this.state.info;
             
             if (loaded) {
-
                 return ( 
-                    <form onSubmit={this.handleSubmit}>
+                    <div className="mid-search-card">
+                        <div className="card w-75">
+                            <div className="card-body">
+                            <form onSubmit={this.handleSubmit}>
+                                <label>
+                                <Toggle
+                                    defaultChecked={one_way}
+                                    icons={false}
+                                    onChange={(e) => this.handleChange("round-trip-selecter", e)} />
+                                <span>One-way</span>
+                                </label>
 
-                        <label>
-                        <Toggle
-                            defaultChecked={round_trip}
-                            icons={false}
-                            onChange={(e) => this.handleChange("round-trip-selecter", e)} />
-                        <span>Round trip</span>
-                        </label>
-    
-                        {/* Leaving From */}
-                        <AsyncSelect placeholder="Going To " noOptionsMessage={() => "Search for a place"} cacheOptions loadOptions={this.loadPlaces} onChange={(e) => this.handleChange("origin-selecter", e)} />
-                        
-                        {/* Going To */}
-                        <AsyncSelect placeholder="Leaving From" noOptionsMessage={() => "Search for a place"} cacheOptions loadOptions={this.loadPlaces} onChange={(e) => this.handleChange("destination-selecter", e)} />
-    
-                        {/*Outbound Date*/}
-                        {round_trip && <DatePicker selected={this.state.outbound} onChange={(e) => this.handleChange("outbound-selecter", e)} label="outbound" dateFormat="MM/dd/yyyy" minDate={new Date()}/>}
-                        
-    
-                        {/* Inbound Date*/}
-                        <DatePicker selected={this.state.inbound} onChange={(e) => this.handleChange("inbound-selecter", e)} label="inbound" dateFormat="MM/dd/yyyy" minDate={this.state.outbound} />
-    
-                        {/* currency */}
-                        <Select defaultValue={currencies.find(item => {return item.value == 'USD'})}
-                            options={currencies} placeholder="Currency" onChange={(e) => this.handleChange("currency-selecter", e)}/>
-    
-                        {/*Submit button */}
-                        <input type="submit" value="Submit" />
-                    </form>
+                                {/* Leaving From */}
+                                <AsyncSelect placeholder="Leaving From" noOptionsMessage={() => "Search for a place"} cacheOptions loadOptions={this.loadPlaces} onChange={(e) => this.handleChange("origin-selecter", e)} />
+
+                                {/* Going To */}
+                                <AsyncSelect placeholder="Going To" noOptionsMessage={() => "Search for a place"} cacheOptions loadOptions={this.loadPlaces} onChange={(e) => this.handleChange("destination-selecter", e)} />
+
+                                {/*Outbound Date*/}
+                                <DatePicker selected={this.state.outbound} onChange={(e) => this.handleChange("outbound-selecter", e)} label="outbound" dateFormat="MM/dd/yyyy" minDate={new Date()}/>
+
+
+                                {/* Inbound Date*/}
+                                {!one_way && <DatePicker selected={this.state.inbound} onChange={(e) => this.handleChange("inbound-selecter", e)} label="inbound" dateFormat="MM/dd/yyyy" minDate={this.state.outbound} />}
+
+                                {/* currency */}
+                                <Select defaultValue={currencies.find(item => {return item.value === 'USD'})}
+                                    options={currencies} placeholder="Currency" onChange={(e) => this.handleChange("currency-selecter", e)}/>
+
+                                {/*Submit button */}
+                                <input type="submit" value="Submit" />
+
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
                 );
             } else {
                 return null;

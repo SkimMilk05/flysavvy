@@ -3,7 +3,7 @@ import './background.css';
 import Slideshow from './Slideshow'
 import FlightCard from './FlightCard'
 import Filter from './Filter'
-import SearchCard from './SearchCard'
+import SearchSession from './SearchSession'
 import LoadImage from './LoadImage'
 
 class Background extends Component {
@@ -13,7 +13,8 @@ class Background extends Component {
                 {/*<FlightCard/>*/}
                 {/*<Slideshow/>*/}
                 {/*<Filter/>*/}
-                <SearchCard/>
+                <SearchSession/>
+                <FlightCard/>
                 {/*<LoadImage/>*/}
             </div>
         );
