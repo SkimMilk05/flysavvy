@@ -9,7 +9,7 @@ class SearchSession extends Component {
         this.state = { //fields
             submitted: false,
             flight_cards: [],
-            reverse_cards: [],
+            reverse_cards: [], //store reversed flight cards so I don't have to sort array every time filter changes
             filter_high_to_low: false //default low to high
 
         }
@@ -23,7 +23,7 @@ class SearchSession extends Component {
         this.setState({
             submitted: true,
             flight_cards: array,
-            reverse_cards: array.slice().reverse()       
+            reverse_cards: array.slice().reverse() //reverse method is in-place (mutates original array). Use slice() to make a copy of array     
         });
     }
 
