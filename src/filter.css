@@ -3,3 +3,10 @@
 .table>tbody>tr>td {
   border-top: none;
 }
+
+/* Make radio elements look like checkboxes */
+input[type="radio"] {
+  -webkit-appearance: checkbox; /* Chrome, Safari, Opera */
+  -moz-appearance: checkbox;    /* Firefox */
+  -ms-appearance: checkbox;     /* not currently supported */
+}

@@ -14,7 +14,6 @@ class Background extends Component {
                 {/*<Slideshow/>*/}
                 {/*<Filter/>*/}
                 <SearchSession/>
-                <FlightCard/>
                 {/*<LoadImage/>*/}
             </div>
         );

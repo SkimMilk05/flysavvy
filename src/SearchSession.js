@@ -1,28 +1,49 @@
 import React, { Component } from 'react';
 import SearchCard from './SearchCard';
+import FlightCard from './FlightCard';
+import Filter from './Filter';
 
 class SearchSession extends Component {
     constructor(props) {
         super(props);
         this.state = { //fields
-            flight_info: null
+            submitted: false,
+            flight_cards: [],
+            filter_high_to_low: false //default low to high
+
         }
     }
 
     catchFlightData = (flightData) => {
-        this.setState({flight_info: flightData})
-        console.log('Set flight Data!')
+        console.log('Set flight Data!');
+        const array = flightData.map((flight) => (
+            <FlightCard round_trip={flight.round_trip} best_price={flight.best_price} price={flight.price} currency={flight.currency} outbound={flight.outbound} inbound={flight.inbound} />
+        ));
+        this.setState({
+            submitted: true,
+            flight_cards: array       
+        });
+    }
+
+    catchFilterData = (high_to_low) => {
+        this.setState({filter_high_to_low: high_to_low});
+        console.log(high_to_low);
     }
 
     render() {
-        const data = this.state.flight_info;
+        const submitted = this.state.submitted;
+        const flight_cards = this.state.flight_cards;
+        const filter_high_to_low = this.state.filter_high_to_low;
 
         return (
             <div>
                 <SearchCard passFlightData = {this.catchFlightData}/>
+                {flight_cards}
+                {flight_cards.reverse()}
+                {submitted && <Filter passFilterData = {this.catchFilterData}/>}
             </div>
             
-        )
+        );
     }
 
 }

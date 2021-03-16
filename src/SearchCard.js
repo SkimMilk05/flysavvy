@@ -199,7 +199,7 @@ class SearchCard extends Component {
         .then(json => {
             console.log(json);
             const info = this.cleanFlightInfo(json); //see method below
-            this.props.passFlightData(info);
+            this.props.passFlightData(info); //send data up to parent component
         })            
     }
 
@@ -233,6 +233,7 @@ class SearchCard extends Component {
 
 
         const round_trip = this.state.round_trip;
+        const curr_sym = json.Currencies[0].Symbol;
 
         const info = json.Quotes.map(function(quote) {
             var clean_info;
@@ -247,19 +248,19 @@ class SearchCard extends Component {
             //find airline name, origin name, and destination name from Ids
             const airline_name = json.Carriers.find(airline => {
                 if (airline.CarrierId === quote.OutboundLeg.CarrierIds[0]) {
-                    return airline.Name;
+                    return airline;
                 }
             });
 
             const origin_name = json.Places.find(place => {
                 if (place.PlaceId === quote.OutboundLeg.OriginId) {
-                    return `${place.Name} ${place.Type}`;
+                    return place;
                 }
             });
 
             const destination_name = json.Places.find(place => {
                 if (place.PlaceId === quote.OutboundLeg.DestinationId) {
-                    return `${place.Name} ${place.Type}`;
+                    return place;
                 }
             });
 
@@ -267,6 +268,7 @@ class SearchCard extends Component {
                 round_trip: round_trip,
                 best_price: first_quote,
                 price: quote.MinPrice,
+                currency: curr_sym,
                 
                 outbound: {
                     nonStop: quote.Direct,
@@ -282,19 +284,19 @@ class SearchCard extends Component {
                 //find airline name, origin name, and destination name from Ids
                 const airline_name = json.Carriers.find(airline => {
                     if (airline.CarrierId === quote.InboundLeg.CarrierIds[0]) {
-                        return airline.Name;
+                        return airline;
                     }
                 });
 
                 const origin_name = json.Places.find(place => {
                     if (place.PlaceId === quote.InboundLeg.OriginId) {
-                        return `${place.Name} ${place.Type}`;
+                        return place;
                     }
                 });
 
                 const destination_name = json.Places.find(place => {
                     if (place.PlaceId === quote.InboundLeg.DestinationId) {
-                        return `${place.Name} ${place.Type}`;
+                        return place;
                     }
                 });
 
@@ -318,7 +320,7 @@ class SearchCard extends Component {
  
     
 
-//
+//render function
     render() {
             var submitted = this.state.submitted;
 
