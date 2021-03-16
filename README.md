@@ -6,6 +6,8 @@ This web application lets users browse for the cheapest flights with currency pr
 
 You can view the completed web application hosted on vercel by clicking: [here](https://vercel.com/)
 
+
+
 ## Instructions for running FlySavvy in local host
 
 Clone this repository to your local machine. In the project directory, you can run:
