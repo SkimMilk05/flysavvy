@@ -1,6 +1,6 @@
-# FlySavvy
+# FlySavvy with Skyscanner API
 
-.
+FlySavvy was developed as part of the Capital One Summit Challenge on [MindSumo](https://www.mindsumo.com/contests/travel_summit)
 
 ## Instructions for running FlySavvy in local host
 
