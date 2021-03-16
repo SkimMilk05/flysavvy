@@ -240,8 +240,10 @@ class SearchCard extends Component {
 
         //Deal with outbound leg first    
             //set variables
+            const quote_id = quote.QuoteId;
+
             var first_quote = false;
-            if (quote === json.Quotes[0]) {
+            if (quote_id === 1) {
                 first_quote = true;
             }
 
@@ -265,6 +267,7 @@ class SearchCard extends Component {
             });
 
             clean_info = {
+                key: quote_id,
                 round_trip: round_trip,
                 best_price: first_quote,
                 price: quote.MinPrice,

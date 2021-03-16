@@ -18,7 +18,7 @@ class SearchSession extends Component {
     catchFlightData = (flightData) => {
         console.log('Set flight Data!');
         const array = flightData.map((flight) => (
-            <FlightCard round_trip={flight.round_trip} best_price={flight.best_price} price={flight.price} currency={flight.currency} outbound={flight.outbound} inbound={flight.inbound} />
+            <FlightCard key={flight.key} round_trip={flight.round_trip} best_price={flight.best_price} price={flight.price} currency={flight.currency} outbound={flight.outbound} inbound={flight.inbound} />
         ));
         this.setState({
             submitted: true,
