@@ -9,6 +9,7 @@ class SearchSession extends Component {
         this.state = { //fields
             submitted: false,
             flight_cards: [],
+            reverse_cards: [],
             filter_high_to_low: false //default low to high
 
         }
@@ -21,7 +22,8 @@ class SearchSession extends Component {
         ));
         this.setState({
             submitted: true,
-            flight_cards: array       
+            flight_cards: array,
+            reverse_cards: array.slice().reverse()       
         });
     }
 
@@ -33,13 +35,14 @@ class SearchSession extends Component {
     render() {
         const submitted = this.state.submitted;
         const flight_cards = this.state.flight_cards;
+        const reverse_cards = this.state.reverse_cards;
         const filter_high_to_low = this.state.filter_high_to_low;
 
         return (
             <div>
                 <SearchCard passFlightData = {this.catchFlightData}/>
-                {flight_cards}
-                {flight_cards.reverse()}
+                {!filter_high_to_low && flight_cards}
+                {filter_high_to_low && reverse_cards}
                 {submitted && <Filter passFilterData = {this.catchFilterData}/>}
             </div>
             

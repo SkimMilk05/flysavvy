@@ -29,7 +29,7 @@ class Filter extends Component {
                 </thead>
                 <tbody>
                     <tr><td> 
-                        <input type="radio" value="false" name="sort" deafultChecked /> Lowest to Highest
+                        <input type="radio" value="false" name="sort" checked /> Lowest to Highest
                     </td></tr>
                     <tr><td>
                     <input type="radio" value="true" name="sort" /> Highest to Lowest
