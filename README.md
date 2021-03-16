@@ -1,10 +1,10 @@
 # FlySavvy with Skyscanner API
 
-FlySavvy was developed as part of the Capital One Summit Challenge on [MindSumo.](https://www.mindsumo.com/contests/travel_summit)
+FlySavvy was developed as part of the Capital One Summit Challenge on [MindSumo](https://www.mindsumo.com/contests/travel_summit)
 
-This web application lets users browse for the cheapest flights with currency preferences, using API calls from [Skyscanner.](https://rapidapi.com/skyscanner/api/skyscanner-flight-search)
+This web application lets users browse for the cheapest flights with currency preferences, using API calls from [Skyscanner](https://rapidapi.com/skyscanner/api/skyscanner-flight-search)
 
-You can view the completed web application hosted on vercel by clicking [here](https://vercel.com/)
+You can view the completed web application hosted on vercel by clicking: [here](https://vercel.com/)
 
 ## Instructions for running FlySavvy in local host
 
