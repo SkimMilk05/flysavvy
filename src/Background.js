@@ -21,7 +21,7 @@ class Background extends Component {
         const opening_page = !this.state.submitted;
 
         return (
-            <div className="Background">
+            <div className={opening_page ? 'Opening-Background d-flex align-items-center': 'Background'}>
                 {opening_page && <Slideshow/>}
                 <SearchSession passSubmitData= {this.catchSubmitData}/>
                 {/*<LoadImage/>*/}

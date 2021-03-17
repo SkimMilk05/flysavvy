@@ -42,9 +42,7 @@ class SearchSession extends Component {
 
         return (
             <div className="begin-search-session">
-                <div className="d-flex align-items-center" style={{minHeight:"calc(100vh)"}}>
-                    <SearchCard passFlightData = {this.catchFlightData}/>
-                </div>
+                <SearchCard passFlightData = {this.catchFlightData}/>
                 {!filter_high_to_low && flight_cards}
                 {filter_high_to_low && reverse_cards}
                 {submitted && <Filter passFilterData = {this.catchFilterData}/>}
