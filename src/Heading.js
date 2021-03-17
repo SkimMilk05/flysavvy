@@ -6,12 +6,9 @@ class Heading extends Component {
         return (
         <div>
             <nav className="navbar fixed-top navbar-light bg-light">
-                <div className="container-fluid">
-                    <img className="navbar-left" src="./logo.png" alt="Logo"/>
-                    <h6 className="logo-text">FlySavvy</h6>
-                    <h6 className="phrase">Find cheap flights, fast</h6>
-                </div>
-                
+                <img className="navbar-left" src="./logo.png" alt="Logo"/>
+                <h6 className="logo-text">FlySavvy</h6>
+                <h6 className="phrase">Find cheap flights, fast</h6> 
             </nav> 
         </div>
             

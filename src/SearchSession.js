@@ -40,8 +40,10 @@ class SearchSession extends Component {
         const filter_high_to_low = this.state.filter_high_to_low;
 
         return (
-            <div>
-                <SearchCard passFlightData = {this.catchFlightData}/>
+            <div className="search-session">
+                <div className="d-flex align-items-center flex-column" style={{minHeight:"calc(100vh - 50px)"}}>
+                    <SearchCard passFlightData = {this.catchFlightData}/>
+                </div>
                 {!filter_high_to_low && flight_cards}
                 {filter_high_to_low && reverse_cards}
                 {submitted && <Filter passFilterData = {this.catchFilterData}/>}
