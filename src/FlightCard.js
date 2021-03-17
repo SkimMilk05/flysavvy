@@ -6,35 +6,27 @@ class FlightCard extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            key: this.props.key,
-            round_trip: this.props.round_trip,
-            best_price: this.props.best_price,
-            price: this.props.price,
-            currency: this.props.currency,
-            outbound: this.props.outbound,
-            inbound: this.props.inbound
-        };
-
-        console.log(this.state.outbound);
     }
 
     render() {
-        const {key, round_trip, best_price, price, currency, outbound, inbound} = this.state;
+        console.log("rendered flight cards")
+        const outbound = this.props.outbound;
+        const inbound = this.props.inbound;
 
         if (typeof inbound !== 'undefined') {
             var inbound_exists = true;
         }
 
         return (
-            <div className="flight-card" key={key}>
+            
+            <div className="flight-card" key={this.props.key}>
                 <div className="card w-75">
                     <div className="card-body">
                         Heres some flight information
-                        Price: {currency + price}
-                        {round_trip && "Round trip"}
-                        {!round_trip && "One way"}
-                        {best_price && "Best price!"}
+                        Price: {this.props.currency + this.props.price}
+                        {this.props.round_trip && "Round trip"}
+                        {!this.props.round_trip && "One way"}
+                        {this.props.best_price && "Best price!"}
                         {<FlightTrip 
                             nonstop={outbound.nonStop} 
                             airline={outbound.airline.Name}  

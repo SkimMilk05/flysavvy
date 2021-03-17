@@ -154,6 +154,7 @@ class SearchCard extends Component {
             this.setState({inbound: event});
         }
         if (selecter === "currency-selecter") {
+            console.log(event.value);
             this.setState({currency: event.value});
         }
     }

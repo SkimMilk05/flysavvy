@@ -25,6 +25,7 @@ class SearchSession extends Component {
             flight_cards: array,
             reverse_cards: array.slice().reverse() //reverse method is in-place (mutates original array). Use slice() to make a copy of array     
         });
+        console.log('Set state!');
     }
 
     catchFilterData = (high_to_low) => {
@@ -33,6 +34,7 @@ class SearchSession extends Component {
     }
 
     render() {
+        {console.log("rendered session again")}
         const submitted = this.state.submitted;
         const flight_cards = this.state.flight_cards;
         const reverse_cards = this.state.reverse_cards;
