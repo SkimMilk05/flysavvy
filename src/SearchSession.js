@@ -34,7 +34,6 @@ class SearchSession extends Component {
     }
 
     render() {
-        {console.log("rendered session again")}
         const submitted = this.state.submitted;
         const flight_cards = this.state.flight_cards;
         const reverse_cards = this.state.reverse_cards;

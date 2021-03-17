@@ -4,10 +4,6 @@ import FlightTrip from './FlightTrip';
 
 class FlightCard extends Component {
 
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         console.log("rendered flight cards")
         const outbound = this.props.outbound;

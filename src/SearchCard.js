@@ -255,19 +255,19 @@ class SearchCard extends Component {
             const airline_name = json.Carriers.find(airline => {
                 if (airline.CarrierId === quote.OutboundLeg.CarrierIds[0]) {
                     return airline;
-                }
+                } else {return null;}
             });
 
             const origin_name = json.Places.find(place => {
                 if (place.PlaceId === quote.OutboundLeg.OriginId) {
                     return place;
-                }
+                } else {return null;}
             });
 
             const destination_name = json.Places.find(place => {
                 if (place.PlaceId === quote.OutboundLeg.DestinationId) {
                     return place;
-                }
+                } else {return null;}
             });
 
             clean_info = {
@@ -292,19 +292,19 @@ class SearchCard extends Component {
                 const airline_name = json.Carriers.find(airline => {
                     if (airline.CarrierId === quote.InboundLeg.CarrierIds[0]) {
                         return airline;
-                    }
+                    } else {return null;}
                 });
 
                 const origin_name = json.Places.find(place => {
                     if (place.PlaceId === quote.InboundLeg.OriginId) {
                         return place;
-                    }
+                    } else {return null;}
                 });
 
                 const destination_name = json.Places.find(place => {
                     if (place.PlaceId === quote.InboundLeg.DestinationId) {
                         return place;
-                    }
+                    } else {return null;}
                 });
 
                 //add inbound attribute to cleaned data
