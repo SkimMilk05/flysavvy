@@ -337,37 +337,38 @@ class SearchCard extends Component {
             
             if (loaded) {
                 return ( 
-                    <div className={submitted ? 'top-card navbar sticky-top navbar-light': 'mid-card card card-block w-75 mx-auto my-auto '}>
-                        <form onSubmit={this.handleSubmit}>
-                            <label>
-                            <Toggle
-                                defaultChecked={one_way}
-                                icons={false}
-                                onChange={(e) => this.handleChange("round-trip-selecter", e)} />
-                            <span>One-way</span>
-                            </label>
+                    <div className={submitted ? 'top-card navbar sticky-top navbar-light': 'mid-card card w-75 mx-auto my-auto'}>
+                        <div className="card-body">
+                            <form onSubmit={this.handleSubmit}>
+                                <label>
+                                <Toggle
+                                    defaultChecked={one_way}
+                                    icons={false}
+                                    onChange={(e) => this.handleChange("round-trip-selecter", e)} />
+                                <span>One-way</span>
+                                </label>
 
-                            {/* Leaving From */}
-                            <AsyncSelect placeholder="Leaving From" noOptionsMessage={() => "Search for a place"} cacheOptions loadOptions={this.loadPlaces} onChange={(e) => this.handleChange("origin-selecter", e)} />
+                                {/* Leaving From */}
+                                <AsyncSelect placeholder="Leaving From" noOptionsMessage={() => "Search for a place"} cacheOptions loadOptions={this.loadPlaces} onChange={(e) => this.handleChange("origin-selecter", e)} />
 
-                            {/* Going To */}
-                            <AsyncSelect placeholder="Going To" noOptionsMessage={() => "Search for a place"} cacheOptions loadOptions={this.loadPlaces} onChange={(e) => this.handleChange("destination-selecter", e)} />
+                                {/* Going To */}
+                                <AsyncSelect placeholder="Going To" noOptionsMessage={() => "Search for a place"} cacheOptions loadOptions={this.loadPlaces} onChange={(e) => this.handleChange("destination-selecter", e)} />
 
-                            {/*Outbound Date*/}
-                            <DatePicker selected={this.state.outbound} onChange={(e) => this.handleChange("outbound-selecter", e)} label="outbound" dateFormat="MM/dd/yyyy" minDate={new Date()}/>
+                                {/*Outbound Date*/}
+                                <DatePicker selected={this.state.outbound} onChange={(e) => this.handleChange("outbound-selecter", e)} label="outbound" dateFormat="MM/dd/yyyy" minDate={new Date()}/>
 
 
-                            {/* Inbound Date*/}
-                            {!one_way && <DatePicker selected={this.state.inbound} onChange={(e) => this.handleChange("inbound-selecter", e)} label="inbound" dateFormat="MM/dd/yyyy" minDate={this.state.outbound} />}
+                                {/* Inbound Date*/}
+                                {!one_way && <DatePicker selected={this.state.inbound} onChange={(e) => this.handleChange("inbound-selecter", e)} label="inbound" dateFormat="MM/dd/yyyy" minDate={this.state.outbound} />}
 
-                            {/* currency */}
-                            <Select defaultValue={currencies.find(item => {return item.value === 'USD'})}
-                                options={currencies} placeholder="Currency" onChange={(e) => this.handleChange("currency-selecter", e)}/>
+                                {/* currency */}
+                                <Select defaultValue={currencies.find(item => {return item.value === 'USD'})}
+                                    options={currencies} placeholder="Currency" onChange={(e) => this.handleChange("currency-selecter", e)}/>
 
-                            {/*Submit button */}
-                            <input type="submit" value="Submit" />
-
-                        </form>
+                                {/*Submit button */}
+                                <input type="submit" value="Submit" />
+                            </form>
+                        </div>
                     </div>
                     
                 );
