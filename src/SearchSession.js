@@ -25,6 +25,7 @@ class SearchSession extends Component {
             flight_cards: array,
             reverse_cards: array.slice().reverse() //reverse method is in-place (mutates original array). Use slice() to make a copy of array     
         });
+        this.props.passSubmitData(true);
         console.log('Set state!');
     }
 
@@ -40,8 +41,8 @@ class SearchSession extends Component {
         const filter_high_to_low = this.state.filter_high_to_low;
 
         return (
-            <div className="search-session">
-                <div className="d-flex align-items-center" style={{minHeight:"calc(100vh - 50px)"}}>
+            <div className="begin-search-session">
+                <div className="d-flex align-items-center" style={{minHeight:"calc(100vh)"}}>
                     <SearchCard passFlightData = {this.catchFlightData}/>
                 </div>
                 {!filter_high_to_low && flight_cards}

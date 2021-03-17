@@ -1,16 +1,29 @@
 import React, { Component } from 'react';
 import './background.css';
-//import Slideshow from './Slideshow'
-import Filter from './Filter'
+import Slideshow from './Slideshow'
 import SearchSession from './SearchSession'
 //import LoadImage from './LoadImage'
 
 class Background extends Component {
+    constructor(props) {
+        super(props);
+        this.state = { //fields
+            submitted: false,
+        }
+    }
+
+    catchSubmitData = (flightData) => {
+        this.setState({submitted: true});
+    }
+
     render() {
+
+        const opening_page = !this.state.submitted;
+
         return (
             <div className="Background">
-                <SearchSession/>
-                {/*<Slideshow/>*/}
+                {opening_page && <Slideshow/>}
+                <SearchSession passSubmitData= {this.catchSubmitData}/>
                 {/*<LoadImage/>*/}
             </div>
         );
