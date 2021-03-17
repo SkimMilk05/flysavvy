@@ -7,7 +7,7 @@ import Select from 'react-select'; //select and search
 import AsyncSelect from 'react-select/async';
 import Toggle from 'react-toggle'; //for toggle for round trip
 import "react-toggle/style.css"; 
-import {dateToString} from './dateToString.js'
+import {dateToStringAPI} from './dateToString.js'
 
 /*
  *Application Logic
@@ -174,8 +174,8 @@ class SearchCard extends Component {
         var origin = this.state.origin;
         var destination = this.state.destination;
 
-        var outbound = dateToString(this.state.outbound); 
-        var inbound = dateToString(this.state.inbound);
+        var outbound = dateToStringAPI(this.state.outbound); 
+        var inbound = dateToStringAPI(this.state.inbound);
 
         var url;
         

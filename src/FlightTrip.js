@@ -1,31 +1,33 @@
 import React, { Component } from 'react';
 //import './flightTrip.css';
-import {dateToString} from './dateToString.js' //dateToStringFunction
+import {dateToStringDisplay} from './dateToString.js' //date to String function
 
 class FlightTrip extends Component {
 
     constructor(props) {
         super(props);
         this.state = { //fields
-            outbound: true,
-            nonStop: true,
-            airline: '',
-            departDate: '',
-            leavingFrom: '',
-            arrivingTo: '',
-            price: 0.00,
+            nonstop: this.props.nonstop,
+            airline: this.props.airline,
+            departDate: dateToStringDisplay(this.props.departDate),
+            leavingFrom: this.props.leavingFrom,
+            arrivingTo: this.props.arrivingTo,
 
-            data: this.props.dataParentToChild
         }
     }
 
     render() {
 
-        const data = this.state.data;
-        console.log("My data:" + data);
+        const {nonstop, airline, departDate, leavingFrom, arrivingTo} = this.state;
         return(
             <div>
-                {data}
+                {nonstop && "Direct flight"}
+                {!nonstop && "Non direct"}
+                depart: {departDate}
+                airline: {airline}
+                leaving From: {leavingFrom}
+                arrivingTo: {arrivingTo}
+
             </div>
         );
         
