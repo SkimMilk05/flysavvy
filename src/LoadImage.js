@@ -1,40 +1,28 @@
 import React, { Component } from 'react';
 import './loadImage.css';
 
+const AnimationButton = ({i}) => <>
+<div className='span' style={{transform: `rotate(calc(18deg * ${i}))`}}>
+    <div className='ball' style={{'animation-delay': `calc(0.1s * ${i})`}}></div>
+</div>
+</>
 
 class LoadImage extends Component {
     
-/*
-    load_html = (
-        <div class="loader">
-            <span style="--i:1;"></span>
-            <span style="--i:2;"></span>
-            <span style="--i:3;"></span>
-            <span style="--i:4;"></span>
-            <span style="--i:5;"></span>
-            <span style="--i:6;"></span>
-            <span style="--i:7;"></span>
-            <span style="--i:9;"></span>
-            <span style="--i:10;"></span>
-            <span style="--i:11;"></span>
-            <span style="--i:12;"></span>
-            <span style="--i:13;"></span>
-            <span style="--i:14;"></span>
-            <span style="--i:15;"></span>
-            <span style="--i:16;"></span>
-            <span style="--i:17;"></span>
-            <span style="--i:18;"></span>
-            <span style="--i:19;"></span>
-            <span style="--i:20;"></span>
-            
-            <div class="rocket">
-            </div>
-        </div>
-    );
-*/
+
+    
+
 
     render() {
-        return <h2>Load Image</h2>;
+        const load_html = [];
+        for(let i =1; i<21;i++) {
+            load_html.push(<AnimationButton key={i} i={i} ></AnimationButton>)
+        }
+        return <div className="loader">
+                {load_html}
+                <div className="rocket">
+                </div>
+            </div>;
         
     }
 }
