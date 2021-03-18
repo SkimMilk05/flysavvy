@@ -201,7 +201,10 @@ class SearchCard extends Component {
         })
         .then( json => {//if response is ok
             console.log(json);
-            this.setState({input_valid: true});
+            this.setState({
+                input_valid: true,
+                submitted: true
+            });
             const info = this.cleanFlightInfo(json); //see method below
             this.props.passFlightData(info); //send data up to parent component         
         })
@@ -333,17 +336,17 @@ class SearchCard extends Component {
 
 //render function
     render() {
-            var submitted = this.state.submitted;
+            const submitted = this.state.submitted;
 
-            var one_way = !(this.state.round_trip);
-            var ready = this.state.currencies_loaded && this.state.countries_loaded;
+            const one_way = !(this.state.round_trip);
+            const ready = this.state.currencies_loaded && this.state.countries_loaded;
             const currencies = this.state.currency_list;
 
             const input_valid = this.state.input_valid;
             
             if (ready) {
                 return ( 
-                    <div className={submitted ? 'top-card navbar sticky-top navbar-light': 'mid-card card w-75 mx-auto shadow-lg'}>
+                    <div className={submitted ? 'top-card card': 'mid-card card w-75 mx-auto shadow-lg'}>
                         <div className="card-body">
                             <form onSubmit={this.handleSubmit}>
                                 <label>

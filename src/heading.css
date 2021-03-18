@@ -1,9 +1,8 @@
 /* CSS for nav bar */
 
 /* for logo */
-img {
-    height: 35px;
-    width: auto;
+.navbar-div {
+    height: 23px;
 }
 
 .logo-text {
@@ -12,4 +11,5 @@ img {
 
 .phrase {
     font-size: x-small;
+    font-weight: 500;
 }

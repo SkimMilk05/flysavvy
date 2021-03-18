@@ -16,7 +16,7 @@ class LoadImage extends Component {
         return (
             <div className="loader">
                 {load_html}
-                <div className="rocket">
+                <div className="plane">
                 </div>
             </div>);
         

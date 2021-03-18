@@ -16,12 +16,14 @@ class SearchSession extends Component {
             filter_high_to_low: false //default low to high
 
         }
+        this.catchFlightData = this.catchFlightData.bind(this);
+        this.catchFilterData = this.catchFilterData.bind(this);
     }
 
     catchFlightData = (flightData) => {
         console.log('Set flight Data!');
-        const array = flightData.map((flight) => (
-            <FlightCard key={flight.key} round_trip={flight.round_trip} best_price={flight.best_price} price={flight.price} currency={flight.currency} outbound={flight.outbound} inbound={flight.inbound} />
+        const array = flightData.map((flight, i) => (
+            <FlightCard key={i} i={i} round_trip={flight.round_trip} best_price={flight.best_price} price={flight.price} currency={flight.currency} outbound={flight.outbound} inbound={flight.inbound} />
         ));
         this.setState({
             submitted: true,
@@ -47,14 +49,55 @@ class SearchSession extends Component {
 
         return (
             <div className={submitted ? 'search-sesion': 'begin-session d-flex align-items-center'}>
+
                 <SearchCard passFlightData = {this.catchFlightData}/>
-                {!filter_high_to_low && flight_cards}
-                {filter_high_to_low && reverse_cards}
-                {no_results && <NoResults />}
-                {submitted && <Filter passFilterData = {this.catchFilterData}/>}
+
+
+                {submitted? 
+                    <div className='row results'>
+                        <div className='col-3'>
+                            <Filter passFilterData = {this.catchFilterData}/>
+                        </div>
+                        <div className='col scrollable'>
+                            {no_results && <NoResults />}
+                            {filter_high_to_low? reverse_cards : flight_cards}
+                        </div>
+                    </div> 
+                    : null
+                }
+                
             </div>
             
         );
+
+        if (submitted) {
+            return (
+            <div className='search-session'>
+                <div className='row'>
+                    <div className='col'>
+                        <SearchCard passFlightData = {this.catchFlightData}/>
+                    </div>
+                </div>
+                <div className='row results'>
+                    <div className='col-3'>
+                        <Filter passFilterData = {this.catchFilterData}/>
+                    </div>
+                    <div className='col scrollable'>
+                        {no_results && <NoResults />}
+                        {filter_high_to_low? reverse_cards : flight_cards}
+                    </div>
+                </div>
+                
+                
+            </div>
+            );
+        } else {
+            return (
+                <div className='begin-session d-flex align-items-center'>
+                    <SearchCard passFlightData = {this.catchFlightData}/>
+                </div>
+            );
+        }
     }
 
 }

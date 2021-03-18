@@ -1,21 +1,5 @@
 /* loading image stylesheet */
 
-/*
-* 
-{
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background: #fff;
-}
-*/
 .loader {
     position: relative;
     width: 120px;
@@ -57,7 +41,7 @@ body {
     }
 }
 
-.rocket {
+.plane {
     position: absolute;
     top: 0;
     left: 0;
@@ -77,7 +61,7 @@ body {
     }
 }
 
-.rocket::before {
+.plane::before {
     content: '\f072';
     font-family: fontAwesome;
     position: absolute;

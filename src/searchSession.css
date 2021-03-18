@@ -3,3 +3,17 @@
 .begin-session {
     min-height: 100vh;
 }
+
+.search-session {
+    height: calc(100vh - 80px);
+}
+
+.results {
+    margin-top: 40px;
+}
+
+.scrollable {
+    height: calc(70vh - 120px);
+    overflow-y: scroll;
+}
+

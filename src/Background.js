@@ -9,6 +9,8 @@ class Background extends Component {
         this.state = { //fields
             submitted: false,
         }
+
+        this.catchSubmitData = this.catchSubmitData.bind(this);
     }
 
     catchSubmitData = (flightData) => {
