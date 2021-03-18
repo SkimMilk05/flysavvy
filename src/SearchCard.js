@@ -346,40 +346,51 @@ class SearchCard extends Component {
             
             if (ready) {
                 return ( 
-                    <div className={submitted ? 'top-card card w-100 shadow-sm my-3': 'mid-card card w-75 mx-auto shadow-lg'}>
-                        <div className="card-body">
-                            <form onSubmit={this.handleSubmit}>
-                                <label>
-                                <Toggle
-                                    defaultChecked={one_way}
-                                    icons={false}
-                                    onChange={(e) => this.handleChange("round-trip-selecter", e)} />
-                                <span>One-way</span>
-                                </label>
-
-                                {/* Leaving From */}
-                                <AsyncSelect placeholder="Leaving From" noOptionsMessage={() => "Search for a place"} cacheOptions loadOptions={this.loadPlaces} onChange={(e) => this.handleChange("origin-selecter", e)} />
-
-                                {/* Going To */}
-                                <AsyncSelect placeholder="Going To" noOptionsMessage={() => "Search for a place"} cacheOptions loadOptions={this.loadPlaces} onChange={(e) => this.handleChange("destination-selecter", e)} />
-
-                                {/*Outbound Date*/}
-                                <DatePicker selected={this.state.outbound} onChange={(e) => this.handleChange("outbound-selecter", e)} label="outbound" dateFormat="MM/dd/yyyy" minDate={new Date()}/>
-
-
-                                {/* Inbound Date*/}
-                                {!one_way && <DatePicker selected={this.state.inbound} onChange={(e) => this.handleChange("inbound-selecter", e)} label="inbound" dateFormat="MM/dd/yyyy" minDate={this.state.outbound} />}
-
-                                {/* currency */}
-                                <Select defaultValue={currencies.find(item => {return item.value === 'USD'})}
-                                    options={currencies} placeholder="Currency" onChange={(e) => this.handleChange("currency-selecter", e)}/>
-
-                                {/*Submit button */}
-                                <input type="submit" value="Submit" />
-                            </form>
+                    <div className={submitted ? 'top-card card w-100 shadow-sm my-3': 'mid-card card d-flex w-75 mx-auto shadow-lg'}>
+                        <div className="card-body text-center d-flex align-items-center justify-content-center">
+                            <div className="container-fluid">
+                                <form onSubmit={this.handleSubmit}>
+                                    <div className='row'><div className='col'></div><div className='col d-flex justify-content-end'>
+                                        <label className="d-flex align-items-center"><Toggle
+                                                defaultChecked={one_way}
+                                                icons={false}
+                                                onChange={(e) => this.handleChange("round-trip-selecter", e)} />
+                                                <span>One-way</span>
+                                        </label>
+                                    </div></div>
+                                    <div className="row">
+                                        <div className="col">
+                                            {/* Going To */}
+                                            {/* Leaving From */}
+                                            <AsyncSelect placeholder="Leaving From" noOptionsMessage={() => "Search for a place"} cacheOptions loadOptions={this.loadPlaces} onChange={(e) => this.handleChange("origin-selecter", e)} />
+                                        </div>
+                                        <div className="col">
+                                            <AsyncSelect placeholder="Going To" noOptionsMessage={() => "Search for a place"} cacheOptions loadOptions={this.loadPlaces} onChange={(e) => this.handleChange("destination-selecter", e)} />
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col d-flex justify-content-beginning">
+                                            <DatePicker selected={this.state.outbound} onChange={(e) => this.handleChange("outbound-selecter", e)} label="outbound" dateFormat="MM/dd/yyyy" minDate={new Date()}
+                                            className="input"/>
+                                            {!one_way && <DatePicker selected={this.state.inbound} onChange={(e) => this.handleChange("inbound-selecter", e)} label="inbound" dateFormat="MM/dd/yyyy" minDate={this.state.outbound} className="input"/>}
+                                        </div>
+                                        <div className='col-3'>
+                                            {/* currency */}
+                                            <Select defaultValue={currencies.find(item => {return item.value === 'USD'})} options={currencies} placeholder="Currency" onChange={(e) => this.handleChange("currency-selecter", e)}/>
+                                        </div>
+                                    </div>
+                                    <div className='row'>
+                                        <div className='col d-flex justify-content-end'>
+                                            {/*Submit button */}
+                                            <input type="submit" value="Submit" style={{height: 36}}/>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
                             {!input_valid && "Input is not valid. Please check your dates and try again"}
                         </div>
                     </div>
+
                     
                 );
             } else {
