@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import SearchCard from './SearchCard';
 import FlightCard from './FlightCard';
 import Filter from './Filter';
+import NoResults from './NoResults';
+
+import './searchSession.css'
 
 class SearchSession extends Component {
     constructor(props) {
@@ -40,11 +43,14 @@ class SearchSession extends Component {
         const reverse_cards = this.state.reverse_cards;
         const filter_high_to_low = this.state.filter_high_to_low;
 
+        const no_results = (flight_cards.length == 0 && submitted) ? true : false;
+
         return (
-            <div className="begin-search-session">
+            <div className={submitted ? 'search-sesion': 'begin-session d-flex align-items-center'}>
                 <SearchCard passFlightData = {this.catchFlightData}/>
                 {!filter_high_to_low && flight_cards}
                 {filter_high_to_low && reverse_cards}
+                {no_results && <NoResults />}
                 {submitted && <Filter passFilterData = {this.catchFilterData}/>}
             </div>
             

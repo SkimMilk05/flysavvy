@@ -25,7 +25,7 @@ class Filter extends Component {
             <div onChange={this.handleChange}>
                 <table className="table">
                 <thead>
-                    <tr><th scope="col">Filter</th></tr>
+                    <tr><th scope="col">Filter Search Results</th></tr>
                 </thead>
                 <tbody>
                     <tr><td> 

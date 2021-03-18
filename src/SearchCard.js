@@ -337,7 +337,7 @@ class SearchCard extends Component {
             
             if (loaded) {
                 return ( 
-                    <div className={submitted ? 'top-card navbar sticky-top navbar-light': 'mid-card card w-75 mx-auto my-auto'}>
+                    <div className={submitted ? 'top-card navbar sticky-top navbar-light': 'mid-card card w-75 mx-auto shadow-lg'}>
                         <div className="card-body">
                             <form onSubmit={this.handleSubmit}>
                                 <label>

@@ -14,31 +14,28 @@ class FlightCard extends Component {
         }
 
         return (
-            
-            <div className="flight-card" key={this.props.key}>
-                <div className="card w-75">
-                    <div className="card-body">
-                        Heres some flight information
-                        Price: {this.props.currency + this.props.price}
-                        {this.props.round_trip && "Round trip"}
-                        {!this.props.round_trip && "One way"}
-                        {this.props.best_price && "Best price!"}
-                        {<FlightTrip 
-                            nonstop={outbound.nonStop} 
-                            airline={outbound.airline.Name}  
-                            departDate={outbound.departDate} 
-                            leavingFrom={`${outbound.leavingFrom.Name} ${outbound.leavingFrom.Type}`} 
-                            arrivingTo={`${outbound.arrivingTo.Name} ${outbound.arrivingTo.Type}`}
-                        />}
+            <div className="flight-card card w-75" key={this.props.key}>
+                <div className="card-body">
+                    Heres some flight information
+                    Price: {this.props.currency + this.props.price}
+                    {this.props.round_trip && "Round trip"}
+                    {!this.props.round_trip && "One way"}
+                    {this.props.best_price && "Best price!"}
+                    {<FlightTrip 
+                        nonstop={outbound.nonStop} 
+                        airline={outbound.airline.Name}  
+                        departDate={outbound.departDate} 
+                        leavingFrom={`${outbound.leavingFrom.Name} ${outbound.leavingFrom.Type}`} 
+                        arrivingTo={`${outbound.arrivingTo.Name} ${outbound.arrivingTo.Type}`}
+                    />}
 
-                        {inbound_exists && <FlightTrip 
-                            nonstop={inbound.nonStop} 
-                            airline={inbound.airline.Name}  
-                            departDate={inbound.departDate} 
-                            leavingFrom={`${inbound.leavingFrom.Name} ${inbound.leavingFrom.Type}`} 
-                            arrivingTo={`${inbound.arrivingTo.Name} ${inbound.arrivingTo.Type}`}
-                        />}
-                    </div>
+                    {inbound_exists && <FlightTrip 
+                        nonstop={inbound.nonStop} 
+                        airline={inbound.airline.Name}  
+                        departDate={inbound.departDate} 
+                        leavingFrom={`${inbound.leavingFrom.Name} ${inbound.leavingFrom.Type}`} 
+                        arrivingTo={`${inbound.arrivingTo.Name} ${inbound.arrivingTo.Type}`}
+                    />}
                 </div>
             </div>
         );

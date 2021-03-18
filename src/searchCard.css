@@ -2,9 +2,9 @@
 /*CSS for searchCard Component*/
 
 .mid-card { /* before submitted once */
+    border-radius: 10px;
     
 }
-
 .top-card { /* after submitted once*/
 
 }
