@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import './background.css';
 import Slideshow from './Slideshow'
 import SearchSession from './SearchSession'
-import LoadImage from './LoadImage'
 
 class Background extends Component {
     constructor(props) {
@@ -24,7 +23,6 @@ class Background extends Component {
             <div className={opening_page ? 'Opening-Background': 'Background'}>
                 {opening_page && <Slideshow/>}
                 <SearchSession passSubmitData= {this.catchSubmitData}/>
-                {<LoadImage/>}
             </div>
         );
     }
