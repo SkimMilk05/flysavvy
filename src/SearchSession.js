@@ -43,7 +43,7 @@ class SearchSession extends Component {
         const reverse_cards = this.state.reverse_cards;
         const filter_high_to_low = this.state.filter_high_to_low;
 
-        const no_results = (flight_cards.length == 0 && submitted) ? true : false;
+        const no_results = (flight_cards.length === 0 && submitted) ? true : false;
 
         return (
             <div className={submitted ? 'search-sesion': 'begin-session d-flex align-items-center'}>

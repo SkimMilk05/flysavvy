@@ -43,11 +43,10 @@ class SearchCard extends Component {
 
             countries_loaded: false,
             currencies_loaded: false,
+            
+            input_valid: true,
 
             flight_info: null
-
-            
-            
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -139,7 +138,7 @@ class SearchCard extends Component {
 /** HANDLE CHANGE TO FORM AND HANDLE FORM SUBMIT METHODS */
 
        //handle any changes to the form
-       handleChange(selecter, event) {
+    handleChange(selecter, event) {
         if (selecter === "round-trip-selecter") {
             this.setState({round_trip: !(event.target.checked)});
         }
@@ -164,7 +163,6 @@ class SearchCard extends Component {
 
     handleSubmit(event) {
         event.preventDefault();
-        this.setState({submitted: true});
         this.getFlightInfo();
     }
 
@@ -198,13 +196,19 @@ class SearchCard extends Component {
         })
         .then(response => {
             console.log(response);
-            return response.json();
+            if (!response.ok) throw new Error(response.status);
+            else return response.json();
         })
-        .then(json => {
+        .then( json => {//if response is ok
             console.log(json);
+            this.setState({input_valid: true});
             const info = this.cleanFlightInfo(json); //see method below
-            this.props.passFlightData(info); //send data up to parent component
-        })            
+            this.props.passFlightData(info); //send data up to parent component         
+        })
+        .catch((error) => {
+            console.log('error: '+ error);
+            this.setState({input_valid: false});
+        })
     }
 
     //cleans the json info to only necessary information after API GET Browse Quotes. Used within getFlightInfo();
@@ -332,10 +336,12 @@ class SearchCard extends Component {
             var submitted = this.state.submitted;
 
             var one_way = !(this.state.round_trip);
-            var loaded = this.state.currencies_loaded && this.state.countries_loaded;
+            var ready = this.state.currencies_loaded && this.state.countries_loaded;
             const currencies = this.state.currency_list;
+
+            const input_valid = this.state.input_valid;
             
-            if (loaded) {
+            if (ready) {
                 return ( 
                     <div className={submitted ? 'top-card navbar sticky-top navbar-light': 'mid-card card w-75 mx-auto shadow-lg'}>
                         <div className="card-body">
@@ -368,6 +374,7 @@ class SearchCard extends Component {
                                 {/*Submit button */}
                                 <input type="submit" value="Submit" />
                             </form>
+                            {!input_valid && "Input is not valid. Please check your dates and try again"}
                         </div>
                     </div>
                     
