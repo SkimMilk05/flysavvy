@@ -346,7 +346,7 @@ class SearchCard extends Component {
             
             if (ready) {
                 return ( 
-                    <div className={submitted ? 'top-card card': 'mid-card card w-75 mx-auto shadow-lg'}>
+                    <div className={submitted ? 'top-card card w-100 shadow-sm my-3': 'mid-card card w-75 mx-auto shadow-lg'}>
                         <div className="card-body">
                             <form onSubmit={this.handleSubmit}>
                                 <label>

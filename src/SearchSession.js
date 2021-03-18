@@ -52,13 +52,12 @@ class SearchSession extends Component {
 
                 <SearchCard passFlightData = {this.catchFlightData}/>
 
-
                 {submitted? 
-                    <div className='row results'>
-                        <div className='col-3'>
+                    <div className='row'>
+                        <div className='col-3 scrollable results'>
                             <Filter passFilterData = {this.catchFilterData}/>
                         </div>
-                        <div className='col scrollable'>
+                        <div className='col scrollable results'>
                             {no_results && <NoResults />}
                             {filter_high_to_low? reverse_cards : flight_cards}
                         </div>
@@ -69,35 +68,6 @@ class SearchSession extends Component {
             </div>
             
         );
-
-        if (submitted) {
-            return (
-            <div className='search-session'>
-                <div className='row'>
-                    <div className='col'>
-                        <SearchCard passFlightData = {this.catchFlightData}/>
-                    </div>
-                </div>
-                <div className='row results'>
-                    <div className='col-3'>
-                        <Filter passFilterData = {this.catchFilterData}/>
-                    </div>
-                    <div className='col scrollable'>
-                        {no_results && <NoResults />}
-                        {filter_high_to_low? reverse_cards : flight_cards}
-                    </div>
-                </div>
-                
-                
-            </div>
-            );
-        } else {
-            return (
-                <div className='begin-session d-flex align-items-center'>
-                    <SearchCard passFlightData = {this.catchFlightData}/>
-                </div>
-            );
-        }
     }
 
 }

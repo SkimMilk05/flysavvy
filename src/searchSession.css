@@ -1,19 +1,19 @@
 /*style for search session*/
 
 .begin-session {
-    min-height: 100vh;
+    height: 100vh;
 }
 
 .search-session {
-    height: calc(100vh - 80px);
+    height: calc(100vh - 60px);
 }
 
 .results {
-    margin-top: 40px;
+    margin-top: 20px;
 }
 
 .scrollable {
-    height: calc(70vh - 120px);
+    height: calc(0.60*(100vh - 60px));
     overflow-y: scroll;
 }
 
