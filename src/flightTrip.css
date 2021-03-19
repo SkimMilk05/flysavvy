@@ -1,0 +1,13 @@
+/* Style for Flight Trip/Leg */
+
+
+
+.airport-info {
+    text-align: center;
+}
+
+hr {
+    border: none;
+    height: 1.5px;
+    background: black;
+}
