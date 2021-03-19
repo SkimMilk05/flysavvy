@@ -52,42 +52,16 @@ class SearchCard extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.getFlightInfo = this.getFlightInfo.bind(this);
         this.getCurrencies = this.getCurrencies.bind(this);
-        this.getCountries = this.getCountries.bind(this);
         this.loadPlaces = this.loadPlaces.bind(this);
         this.cleanFlightInfo = this.cleanFlightInfo.bind(this);
     }
 
     //get list of countries and currencies accepted by Skyscanner on mount
     componentDidMount() {
-        this.getCountries();
         this.getCurrencies();
     }
 
 /** FORM METHODS */
-    //this method makes API call to get list of acceptable countries
-    getCountries() {
-        fetch("https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/reference/v1.0/countries/en-US", {
-            "method": "GET",
-            "headers": {
-                "x-rapidapi-key": "73c4c7b9e4msh0a2357717fa16ddp1db3bdjsn8cef95e5049c",
-                "x-rapidapi-host": "skyscanner-skyscanner-flight-search-v1.p.rapidapi.com"
-            }
-        })
-        .then(response => {
-            console.log(response);
-            return response.json();
-        })
-        .then(json => {
-            console.log(json);
-            const countries = json.Countries.map(function (cnt) {
-                return { value: cnt.Code, label: cnt.Name };
-            });
-            this.setState({
-                country_list: countries,
-                countries_loaded: true
-            });
-        })
-    }
 
     //this method makes API call to get list of acceptable currencies
     getCurrencies() {
