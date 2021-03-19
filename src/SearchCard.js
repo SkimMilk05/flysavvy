@@ -217,7 +217,7 @@ class SearchCard extends Component {
         //set fields that are global to all quotes
         const round_trip = this.state.round_trip;
         const curr_sym = json.Currencies[0].Symbol;
-        const best_price_amt;
+        var best_price_amt;
 
         //for each quote, extract price, airline, origin, destination, and outbound and inbound leg information
         const info = json.Quotes.map(function(quote) {
