@@ -20,7 +20,7 @@ class LoadImage extends Component {
                 </div>
                 {this.props.book? 
                 <h6 className="loading-mess">Taking you to the booking site <br/>
-                <p className="fine-print">if Skyscanner API provided ticketing information, FlySavvy would then direct the user to book their ticket</p>
+                <p className="fine-print">if Skyscanner API provided ticketing information, FlySavvy would then redirect the user to book their ticket</p>
                 </h6>
                 
                 : <h6 className="loading-mess">Loading flights</h6>
