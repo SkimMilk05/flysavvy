@@ -67,7 +67,7 @@ class SearchSession extends Component {
 
                 <SearchCard passStartLoad = {this.catchStartLoad} passFlightData = {this.catchFlightData}/>
 
-                {(start_load && !submitted) || book  &&
+                {((start_load && !submitted) || book)  &&
                     <div className="d-flex load-page">
                         <div className="mx-auto my-auto">
                             <LoadImage book = {this.state.book}/>
