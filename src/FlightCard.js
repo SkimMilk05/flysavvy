@@ -4,6 +4,19 @@ import FlightTrip from './FlightTrip';
 
 class FlightCard extends Component {
 
+    constructor(props) {
+        super(props);
+        this.state = { //fields
+            book: false,
+        };
+        this.handleChange = this.handleChange.bind(this);
+    }
+
+    handleChange() {
+        this.setState({book: true})
+        this.props.passBook(true);
+    }
+
     render() {
         console.log("rendered flight cards")
         const outbound = this.props.outbound;
@@ -46,7 +59,8 @@ class FlightCard extends Component {
                                 <div className="trip-info my-auto mx-auto">
                                     <h2 className="price">{this.props.currency + this.props.price}</h2>
                                     <h6 className="trip">{this.props.round_trip? "Round trip": "One way"}</h6>
-                                    <h5 className="best-price"><span className="badge badge-success">{this.props.best_price && "Best price!"}</span></h5>
+                                    <h4 className="best-price"><span className="badge badge-success">{this.props.best_price && "Best price!"}</span></h4>
+                                    <button onClick={this.handleChange} className="btn btn-info btn-sm shadow-sm">Book Now</button>
                                 </div>
                                 
                             </div>

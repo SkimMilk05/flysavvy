@@ -17,3 +17,7 @@
     overflow-y: scroll;
 }
 
+.load-page {
+    height: calc(0.50*(100vh - 60px));
+}
+

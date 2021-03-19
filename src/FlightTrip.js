@@ -26,7 +26,7 @@ class FlightTrip extends Component {
                 <div className="card-body">
                 <div className="row">
                     <div className="col">
-                        {departDate}
+                        <small>Departs on</small> {departDate}
                     </div>
                 </div>
                 <div className="row my-4">

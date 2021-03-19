@@ -200,6 +200,7 @@ class SearchCard extends Component {
             else return response.json();
         })
         .then( json => {//if response is ok
+            this.props.passStartLoad(true);
             console.log(json);
             this.setState({
                 input_valid: true,
@@ -248,15 +249,17 @@ class SearchCard extends Component {
 
         const info = json.Quotes.map(function(quote) {
             var clean_info;
+            var minprice;
+            var best_price = false
 
         //Deal with outbound leg first    
             //set variables
             const quote_id = quote.QuoteId;
-
-            var first_quote = false;
             if (quote_id === 1) {
-                first_quote = true;
+                minprice = quote.MinPrice;
             }
+
+            quote.MinPrice === minprice? best_price = true : best_price = false;
 
             //find airline name, origin name, and destination name from Ids
             const airline_name = json.Carriers.find(airline => {
@@ -280,7 +283,7 @@ class SearchCard extends Component {
             clean_info = {
                 key: quote_id,
                 round_trip: round_trip,
-                best_price: first_quote,
+                best_price: best_price,
                 price: quote.MinPrice,
                 currency: curr_sym,
                 
@@ -352,11 +355,11 @@ class SearchCard extends Component {
                                 <form onSubmit={this.handleSubmit}>
                                     <div className='row'><div className='col'></div><div className='col d-flex justify-content-end'>
                                         <label className="d-flex align-items-center"><Toggle
-                                                className="responsive"
+                                                className="responsive toggle"
                                                 defaultChecked={one_way}
                                                 icons={false}
                                                 onChange={(e) => this.handleChange("round-trip-selecter", e)} />
-                                                <span>One-way</span>
+                                                <span style={{marginLeft: 5}}> One-way</span>
                                         </label>
                                     </div></div>
                                     <div className="row">
