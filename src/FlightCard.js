@@ -12,7 +12,7 @@ class FlightCard extends Component {
         const inbound_exists = (typeof inbound !== 'undefined')? true: false;
 
         return (
-            <div className={this.props.i === 0? "flight-card card border-success w-100": "flight-card card border-secondary w-100"} key={this.props.i}>
+            <div className={this.props.i === 0? "flight-card card border-success w-100 shadow-sm": "flight-card card border-secondary w-100 shadow-sm"} key={this.props.i}>
                 <div className="card-body m-0 p-0">
                     <div className="container">
                         <div className="row">

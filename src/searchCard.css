@@ -33,15 +33,34 @@
     -webkit-box-pack: justify;
     -webkit-justify-content: space-between;
     justify-content: space-between;
-    min-height: 38px;
     outline: 0!important;
     position: relative;
     -webkit-transition: all 100ms;
     transition: all 100ms;
     box-sizing: border-box;
     text-align:  center;
+    width: 50%;
 }
 
 .mid-card .row {
-    min-height: calc(40vh / 4);
+    height: 10vh;
+}
+
+.top-card .row {
+    height: calc((0.30*(100vh - 60px)) / 4);
+}
+
+.responsive {
+    max-height: 6vh !important;
+    width: auto;
+}
+
+.submit {
+    background-color: #BFE5D9;
+    border-color: #addece;
+}
+
+.error {
+    text-align: center;
+    color: #ad565a;
 }
