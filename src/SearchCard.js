@@ -13,15 +13,14 @@ import "react-toggle/style.css";
 import {dateToStringAPI} from './dateToString.js'
 
 /*
- *Application Logic
+ *SearchCard Logic
  * 0. When component mounts
- *      load countries - GET list markets
- *      load currencies - GET currencies
+ *      load currencies - GET Currencies
  * 1. User types in place
- *     when they type in input, send api request to find places list.
+ *     when they type in input, send api request to find places list. loadPlaces() - GET List Places
  *     user chooses a place. destination is the ID that skyscanner uses. 
- * 2. After you return places list, send request to browse dates/quotes to get flight information
- * 3. After you obtain flight information, pass on the data to flightCard components and load. 
+ * 2. After you return places list, send request to browse quotes to get flight information - GET Browse Quotes
+ * 3. After you obtain flight information, extract necessary data and pass on the data up to Search Session. Search session will create array of flightCard components and render them onto the page.
  *     
  */
 
@@ -30,7 +29,7 @@ class SearchCard extends Component {
     constructor(props) {
         super(props);
         this.state = { //fields
-            submitted: false,
+            submitted: false, //to change between top card and mid card
             round_trip: true,
 
             country: 'US', //set default to US. Other countries work with US query 
@@ -41,7 +40,6 @@ class SearchCard extends Component {
             currency: 'USD',
             locale: 'en-US',
 
-            countries_loaded: false,
             currencies_loaded: false,
             
             input_valid: true,
@@ -62,7 +60,6 @@ class SearchCard extends Component {
     }
 
 /** FORM METHODS */
-
     //this method makes API call to get list of acceptable currencies
     getCurrencies() {
         fetch("https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/reference/v1.0/currencies", {
@@ -82,7 +79,7 @@ class SearchCard extends Component {
                 return { value: curr.Code, label: `(${curr.Symbol}) ${curr.Code}`};
             });
             this.setState({
-                currency_list: currencies,
+                currency_list: currencies, 
                 currencies_loaded: true
             });
         })
@@ -174,7 +171,7 @@ class SearchCard extends Component {
             else return response.json();
         })
         .then( json => {//if response is ok
-            this.props.passStartLoad(true);
+            this.props.passStartLoad(true); //let searchSession know that flight cards are loading
             console.log(json);
             this.setState({
                 input_valid: true,
@@ -183,7 +180,7 @@ class SearchCard extends Component {
             const info = this.cleanFlightInfo(json); //see method below
             this.props.passFlightData(info); //send data up to parent component         
         })
-        .catch((error) => {
+        .catch((error) => { //if API request is not valid
             console.log('error: '+ error);
             this.setState({input_valid: false});
         })
@@ -217,43 +214,37 @@ class SearchCard extends Component {
              * NOTE: Skyscanner API returns Quotes objects array that is sorted from least to greatest MinPrice!! 
              */
 
-
+        //set fields that are global to all quotes
         const round_trip = this.state.round_trip;
         const curr_sym = json.Currencies[0].Symbol;
+        const best_price_amt;
 
+        //for each quote, extract price, airline, origin, destination, and outbound and inbound leg information
         const info = json.Quotes.map(function(quote) {
-            var clean_info;
-            var minprice;
-            var best_price = false
-
-        //Deal with outbound leg first    
-            //set variables
+            var clean_info; //initialize json for extracted information
+            
+            //set fields for extracting needed information
             const quote_id = quote.QuoteId;
-            if (quote_id === 1) {
-                minprice = quote.MinPrice;
-            }
+            var best_price = false 
 
+            /***Deal with outbound leg first****/
+            //if this is the first quote, it is the best price amount. if it is not, don't change the amount
+            quote_id === 1? best_price_amt = quote.MinPrice : best_price_amt = best_price_amt;
+
+            //if the current quote is the same as the best price amount, it is a best price flight
             quote.MinPrice === minprice? best_price = true : best_price = false;
 
             //find airline name, origin name, and destination name from Ids
-            const airline_name = json.Carriers.find(airline => {
-                if (airline.CarrierId === quote.OutboundLeg.CarrierIds[0]) {
-                    return airline;
-                } else {return null;}
-            });
+            const airline_name = json.Carriers.find(airline => { //airline name
+                return (airline.CarrierId === quote.OutboundLeg.CarrierIds[0]) ? airline : null});
 
-            const origin_name = json.Places.find(place => {
-                if (place.PlaceId === quote.OutboundLeg.OriginId) {
-                    return place;
-                } else {return null;}
-            });
+            const origin_name = json.Places.find(place => { //origin name
+                return (place.PlaceId === quote.OutboundLeg.OriginId) ? place : null});
 
-            const destination_name = json.Places.find(place => {
-                if (place.PlaceId === quote.OutboundLeg.DestinationId) {
-                    return place;
-                } else {return null;}
-            });
-
+            const destination_name = json.Places.find(place => { //desination name
+                return (place.PlaceId === quote.OutboundLeg.DestinationId) ? place: null});
+            
+            //fill cleaned info json object
             clean_info = {
                 key: quote_id,
                 round_trip: round_trip,
@@ -269,42 +260,35 @@ class SearchCard extends Component {
                     arrivingTo: destination_name,
                 }
             }
-        
-        //If inbound leg exists
+            /****END outbound leg***/
+
+            /* If inbound leg exists  ****/
             if (round_trip) {
                 //find airline name, origin name, and destination name from Ids
-                const airline_name = json.Carriers.find(airline => {
-                    if (airline.CarrierId === quote.InboundLeg.CarrierIds[0]) {
-                        return airline;
-                    } else {return null;}
-                });
+                const airline_name = json.Carriers.find(airline => { //airline name
+                    return (airline.CarrierId === quote.InboundLeg.CarrierIds[0]) ? airline : null});
 
-                const origin_name = json.Places.find(place => {
-                    if (place.PlaceId === quote.InboundLeg.OriginId) {
-                        return place;
-                    } else {return null;}
-                });
+                const origin_name = json.Places.find(place => { //origin name
+                    return (place.PlaceId === quote.InboundLeg.OriginId) ? place : null});
 
-                const destination_name = json.Places.find(place => {
-                    if (place.PlaceId === quote.InboundLeg.DestinationId) {
-                        return place;
-                    } else {return null;}
-                });
+                const destination_name = json.Places.find(place => { //desination name
+                    return (place.PlaceId === quote.InboundLeg.DestinationId) ? place: null});
 
-                //add inbound attribute to cleaned data
-                clean_info.inbound = {
-                    nonStop: quote.Direct,
-                    airline: airline_name,
-                    departDate: quote.InboundLeg.DepartureDate,
-                    leavingFrom: origin_name,
-                    arrivingTo: destination_name,
-                }
+                    //add inbound attribute to cleaned data
+                    clean_info.inbound = {
+                        nonStop: quote.Direct,
+                        airline: airline_name,
+                        departDate: quote.InboundLeg.DepartureDate,
+                        leavingFrom: origin_name,
+                        arrivingTo: destination_name,
+                    }
             }
-            
-            return clean_info;
-        });
+            return clean_info; //return extracted information for each quote
+        }); 
+        /**END map function that cleans each quote */
 
         console.log(info);
+        //return the cleaned info array
         return info;
     }
 
@@ -377,9 +361,6 @@ class SearchCard extends Component {
                             </div>
                         }
                     </div>
-
-
-                    
                 );
             } else {
                 return null;
