@@ -1,0 +1,4 @@
+
+.noResults {
+    height: calc(0.60*(100vh - 60px))
+}
