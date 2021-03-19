@@ -229,10 +229,10 @@ class SearchCard extends Component {
 
             /***Deal with outbound leg first****/
             //if this is the first quote, it is the best price amount. if it is not, don't change the amount
-            quote_id === 1? best_price_amt = quote.MinPrice : best_price_amt = best_price_amt;
-
+            best_price_amt = (quote.MinPrice && quote_id === 1);
+            
             //if the current quote is the same as the best price amount, it is a best price flight
-            quote.MinPrice === minprice? best_price = true : best_price = false;
+            quote.MinPrice === best_price_amt? best_price = true : best_price = false;
 
             //find airline name, origin name, and destination name from Ids
             const airline_name = json.Carriers.find(airline => { //airline name
